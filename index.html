@@ -1,1 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Study Planner AI</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>🔥 Study Planner AI</h1>
+
+<div id="calendar"></div>
+
+<div id="popup" class="hidden">
+    <h3 id="selectedDate"></h3>
+    <div id="subjectContainer"></div>
+    <button onclick="addSubject()">+ Thêm môn</button>
+    <button onclick="closePopup()">Đóng</button>
+</div>
+
+<h2>📈 Thống kê học tập</h2>
+<canvas id="studyChart"></canvas>
+
+<h2>🤖 AI Phân tích</h2>
+<div id="aiBox"></div>
+
+<h2>🧠 Knowledge Graph</h2>
+<div id="knowledgeGraph"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
 
