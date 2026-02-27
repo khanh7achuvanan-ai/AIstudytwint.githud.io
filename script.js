@@ -2,14 +2,11 @@
 // CẤU HÌNH VÀ BIẾN TOÀN CỤC
 // ============================================
 const CONFIG = {
-    // Mặc định nếu không có API key sẽ dùng mock
-    GEMINI_API_KEY: window.API_KEY || null,
     GEMINI_ENDPOINT: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
 };
 
 // Module quản lý lưu trữ
 const Storage = {
-    // Lưu dữ liệu vào localStorage
     save: (key, value) => {
         try {
             localStorage.setItem(key, JSON.stringify(value));
@@ -27,6 +24,11 @@ const Storage = {
     }
 };
 
+// Lấy API key từ localStorage
+function getApiKey() {
+    return localStorage.getItem('gemini_api_key');
+}
+
 // ============================================
 // MODULE CHÍNH
 // ============================================
@@ -41,6 +43,8 @@ const App = (function() {
     let lastStudyDate = null;
     let scheduleItems = [];
     let countdownInterval = null;
+    let biometricsInterval = null;
+    let activeSessionIndex = -1;
     
     // Dữ liệu môn học (khởi tạo từ Storage hoặc mặc định)
     const subjectData = Storage.load('subjectData', {
@@ -48,36 +52,79 @@ const App = (function() {
             name: 'Toán',
             icon: '📐',
             real: [6.5, 7.0, 7.2, 7.8],
-            predicted: [8.0, 8.3],
             weaknesses: ['Hình học không gian', 'Tích phân', 'Số phức'],
-            tip: '🔢 Ôn lại chuyên đề Vector. Cần luyện thêm bài tập nâng cao.'
+            tip: '🔢 Ôn lại chuyên đề Vector.'
         },
         english: {
             name: 'Tiếng Anh',
             icon: '📘',
             real: [7.0, 7.3, 7.8, 8.1],
-            predicted: [8.4, 8.7],
             weaknesses: ['Từ vựng', 'Phrasal verbs', 'IELTS Writing'],
-            tip: '📘 Bạn hay quên từ vựng sau 3 ngày. Hệ thống kích hoạt Spaced Repetition.'
+            tip: '📘 Bạn hay quên từ vựng sau 3 ngày.'
         },
         physics: {
             name: 'Vật Lý',
             icon: '⚡',
             real: [6.0, 6.8, 7.5, 7.9],
-            predicted: [8.1, 8.3],
             weaknesses: ['Điện từ', 'Lượng tử ánh sáng', 'Dao động'],
-            tip: '⚡ Sai số trong bài động lượng đang tăng. Cần luyện thêm.'
+            tip: '⚡ Sai số trong bài động lượng đang tăng.'
         },
-        // ... (các môn khác giữ nguyên, nhưng có thể bổ sung)
         chemistry: {
             name: 'Hóa Học',
             icon: '🧪',
             real: [7.2, 7.5, 7.9, 8.3],
-            predicted: [8.5, 8.7],
             weaknesses: ['Hóa hữu cơ', 'Phản ứng oxi hóa khử'],
-            tip: '🧪 Phản ứng oxi hóa khử còn yếu. Đề xuất làm thêm bài tập.'
+            tip: '🧪 Phản ứng oxi hóa khử còn yếu.'
         },
-        // ... (viết đủ 11 môn, nhưng để ngắn gọn tôi chỉ lấy mẫu)
+        biology: {
+            name: 'Sinh Học',
+            icon: '🧬',
+            real: [7.5, 7.8, 8.0, 8.2],
+            weaknesses: ['Cấu trúc tế bào', 'Di truyền học'],
+            tip: '🧬 Cần ôn lại cấu trúc tế bào.'
+        },
+        literature: {
+            name: 'Ngữ Văn',
+            icon: '📖',
+            real: [7.0, 7.3, 7.6, 7.8],
+            weaknesses: ['Nghị luận xã hội', 'Phân tích thơ'],
+            tip: '📖 Phân tích tác phẩm còn sơ sài.'
+        },
+        history: {
+            name: 'Lịch Sử',
+            icon: '🏛️',
+            real: [7.8, 8.0, 8.2, 8.5],
+            weaknesses: ['Mốc thời gian', 'Sự kiện thế giới'],
+            tip: '🏛️ Hay nhầm mốc thời gian.'
+        },
+        geography: {
+            name: 'Địa Lý',
+            icon: '🌍',
+            real: [7.4, 7.7, 8.0, 8.3],
+            weaknesses: ['Bản đồ', 'Kinh tế vùng'],
+            tip: '🌍 Bản đồ các vùng kinh tế còn lúng túng.'
+        },
+        civics: {
+            name: 'GDCD',
+            icon: '🤝',
+            real: [8.0, 8.2, 8.4, 8.6],
+            weaknesses: ['Pháp luật', 'Đạo đức kinh doanh'],
+            tip: '🤝 Cần liên hệ thực tế nhiều hơn.'
+        },
+        informatics: {
+            name: 'Tin Học',
+            icon: '💻',
+            real: [7.9, 8.1, 8.3, 8.5],
+            weaknesses: ['Thuật toán', 'Cấu trúc dữ liệu'],
+            tip: '💻 Thuật toán sắp xếp còn sai.'
+        },
+        technology: {
+            name: 'Công Nghệ',
+            icon: '🔧',
+            real: [7.3, 7.6, 7.9, 8.2],
+            weaknesses: ['Bản vẽ kỹ thuật', 'Vật liệu cơ khí'],
+            tip: '🔧 Bản vẽ kỹ thuật chưa chính xác.'
+        }
     });
 
     // Lưu lại mỗi khi thay đổi
@@ -86,15 +133,16 @@ const App = (function() {
     }
 
     // ============================================
-    // HÀM GỌI GEMINI API
+    // HÀM GỌI GEMINI API (lấy key từ localStorage)
     // ============================================
     async function callGemini(prompt) {
-        if (!CONFIG.GEMINI_API_KEY) {
-            console.warn('Không có API key, dùng mock response');
+        const apiKey = getApiKey();
+        if (!apiKey) {
+            console.warn('Chưa có API key, dùng mock response');
             return mockAIResponse(prompt);
         }
         try {
-            const response = await fetch(`${CONFIG.GEMINI_ENDPOINT}?key=${CONFIG.GEMINI_API_KEY}`, {
+            const response = await fetch(`${CONFIG.GEMINI_ENDPOINT}?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -102,20 +150,26 @@ const App = (function() {
                 })
             });
             const data = await response.json();
-            return data.candidates[0].content.parts[0].text;
+            if (data.candidates && data.candidates[0]) {
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error('Invalid response');
+            }
         } catch (error) {
             console.error('Lỗi gọi Gemini:', error);
             return mockAIResponse(prompt);
         }
     }
 
-    // Mock response khi không có key
     function mockAIResponse(prompt) {
         if (prompt.includes('insight')) {
             return 'Học đều các môn, tập trung vào điểm yếu để cải thiện.';
         }
         if (prompt.includes('dự báo')) {
-            return 'Dựa trên xu hướng, điểm sẽ tăng nhẹ. Dự báo 1: 8.4, Dự báo 2: 8.7';
+            return '8.4, 8.7';
+        }
+        if (prompt.includes('lộ trình')) {
+            return 'Ôn tập theo từng bước: 1. Xem lại lý thuyết, 2. Làm bài tập cơ bản, 3. Nâng cao dần.';
         }
         return 'Chăm chỉ học tập bạn nhé!';
     }
@@ -128,42 +182,42 @@ const App = (function() {
         const lastScore = data.real[data.real.length - 1];
         const focus = document.getElementById('focusLevel').textContent;
         const heart = document.getElementById('heartRate').textContent;
+        const completedSessions = scheduleItems.filter(item => item.completed).length;
         
-        const prompt = `Học sinh môn ${data.name} có điểm hiện tại ${lastScore}, mức tập trung ${focus}, nhịp tim ${heart}. Hãy đưa ra một lời khuyên học tập ngắn gọn (dưới 100 ký tự), tập trung vào điểm yếu: ${data.weaknesses.join(', ')}.`;
+        const prompt = `Học sinh môn ${data.name} có điểm hiện tại ${lastScore}, mức tập trung ${focus}, nhịp tim ${heart}. Đã hoàn thành ${completedSessions} ca học hôm nay. Hãy đưa ra một lời khuyên học tập ngắn gọn (dưới 100 ký tự), tập trung vào điểm yếu: ${data.weaknesses.join(', ')}.`;
         
         const advice = await callGemini(prompt);
         document.getElementById('dailyTip').textContent = advice;
     }
 
     // ============================================
-    // DỰ BÁO ĐIỂM TỪ AI
+    // DỰ BÁO ĐIỂM DỰA TRÊN TRUNG BÌNH CỘNG (không cần AI)
     // ============================================
-    async function predictScores(subject, newRealScores) {
-        const data = subjectData[subject];
-        const scores = newRealScores || data.real;
-        const prompt = `Điểm các tuần gần đây của môn ${data.name}: ${scores.join(', ')}. Dựa trên xu hướng, hãy dự báo 2 điểm tiếp theo (chỉ trả về số, cách nhau bởi dấu phẩy, ví dụ: 8.5, 8.9)`;
-        
-        const response = await callGemini(prompt);
-        const matches = response.match(/\d+\.?\d*/g);
-        if (matches && matches.length >= 2) {
-            return [parseFloat(matches[0]), parseFloat(matches[1])];
-        }
-        // Mặc định nếu không parse được
-        return [scores[scores.length-1] + 0.3, scores[scores.length-1] + 0.6];
+    function predictScores(scores) {
+        if (scores.length < 2) return [scores[0] + 0.5, scores[0] + 1.0];
+        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+        const trend = (scores[scores.length - 1] - scores[0]) / scores.length;
+        return [
+            Math.min(10, Math.max(0, avg + trend + 0.2)),
+            Math.min(10, Math.max(0, avg + trend * 2 + 0.4))
+        ];
     }
 
     // ============================================
     // KHỞI TẠO BIỂU ĐỒ
     // ============================================
-    async function initChart(subject) {
+    function initChart(subject) {
         const ctx = document.getElementById('roadmapChart');
         if (!ctx) return;
         if (chart) chart.destroy();
 
         const data = subjectData[subject];
+        const predicted = predictScores(data.real);
+        data.predicted = predicted;
+
         const labels = [...data.real.map((_, i) => `Tuần ${i+1}`), 'Dự báo 1', 'Dự báo 2'];
         const realData = [...data.real, null, null];
-        const predData = [null, null, null, null, ...data.predicted];
+        const predData = [null, null, null, null, ...predicted];
 
         chart = new Chart(ctx, {
             type: 'line',
@@ -198,26 +252,26 @@ const App = (function() {
 
         // Cập nhật stats
         document.getElementById('statReal').textContent = data.real[data.real.length-1].toFixed(1);
-        document.getElementById('statPred1').textContent = data.predicted[0].toFixed(1);
-        document.getElementById('statPred2').textContent = data.predicted[1].toFixed(1);
+        document.getElementById('statPred1').textContent = predicted[0].toFixed(1);
+        document.getElementById('statPred2').textContent = predicted[1].toFixed(1);
         document.getElementById('currentGPA').textContent = data.real[data.real.length-1].toFixed(1);
+        
+        // Độ tin cậy giả định
+        document.getElementById('confidenceValue').textContent = Math.floor(70 + Math.random() * 20) + '%';
     }
 
     // ============================================
-    // THÊM ĐIỂM MỚI VÀ CẬP NHẬT DỰ BÁO
+    // THÊM ĐIỂM MỚI VÀ CẬP NHẬT BIỂU ĐỒ
     // ============================================
     async function addNewScore(score) {
         const data = subjectData[currentSubject];
         data.real.push(score);
-        if (data.real.length > 6) data.real.shift(); // giữ tối đa 6 điểm
-        
-        // Gọi AI dự báo
-        const newPred = await predictScores(currentSubject, data.real);
-        data.predicted = newPred;
+        if (data.real.length > 6) data.real.shift();
         
         saveSubjectData();
-        await initChart(currentSubject);
-        await updateDailyInsight(); // cập nhật insight sau khi có điểm mới
+        initChart(currentSubject);
+        await updateDailyInsight();
+        updateStreak(); // thêm điểm tính là học tập
     }
 
     // ============================================
@@ -250,11 +304,15 @@ const App = (function() {
         scheduleItems.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'schedule-item';
+            if (index === activeSessionIndex) {
+                div.classList.add('active-session');
+            }
             div.draggable = true;
             div.dataset.index = index;
             div.innerHTML = `
                 <span class="subject">${item.subject}</span>
                 <span class="time">${item.time}</span>
+                <span class="countdown-timer" id="countdown-${index}"></span>
                 <span class="delete-schedule" onclick="App.deleteScheduleItem(${index})">✖</span>
             `;
             div.addEventListener('dragstart', handleDragStart);
@@ -262,7 +320,7 @@ const App = (function() {
             list.appendChild(div);
         });
         Storage.save('schedule', scheduleItems);
-        checkCurrentSession();
+        checkActiveSession();
     }
 
     function handleDragStart(e) {
@@ -282,15 +340,14 @@ const App = (function() {
         const toIndex = toElement.dataset.index;
         if (fromIndex === toIndex) return;
         
-        // Swap items
         [scheduleItems[fromIndex], scheduleItems[toIndex]] = [scheduleItems[toIndex], scheduleItems[fromIndex]];
         renderSchedule();
     }
 
     function addScheduleItem(subject, time) {
-        scheduleItems.push({ subject, time });
+        scheduleItems.push({ subject, time, completed: false });
         renderSchedule();
-        updateStreak(); // thêm lịch được tính như học tập
+        updateStreak();
     }
 
     function deleteScheduleItem(index) {
@@ -298,52 +355,65 @@ const App = (function() {
         renderSchedule();
     }
 
-    // Countdown cho ca học hiện tại
-    function checkCurrentSession() {
+    // Kiểm tra ca học hiện tại và kích hoạt countdown
+    function checkActiveSession() {
         const now = new Date();
         const currentTime = now.getHours() * 60 + now.getMinutes();
-        let currentSession = null;
+        let newActiveIndex = -1;
         
-        for (let item of scheduleItems) {
+        scheduleItems.forEach((item, index) => {
             const [start, end] = item.time.split(' - ').map(t => {
                 const [h, m] = t.split(':').map(Number);
                 return h * 60 + m;
             });
             if (currentTime >= start && currentTime < end) {
-                currentSession = item;
-                break;
+                newActiveIndex = index;
             }
-        }
+        });
 
-        const container = document.getElementById('countdownContainer');
-        if (currentSession) {
-            container.style.display = 'block';
-            document.getElementById('currentSession').textContent = currentSession.subject;
-            const endTime = currentSession.time.split(' - ')[1];
-            startCountdown(endTime);
-        } else {
-            container.style.display = 'none';
-            if (countdownInterval) clearInterval(countdownInterval);
+        if (newActiveIndex !== activeSessionIndex) {
+            activeSessionIndex = newActiveIndex;
+            renderSchedule();
+            if (activeSessionIndex !== -1) {
+                startCountdownForSession(activeSessionIndex);
+            } else {
+                if (countdownInterval) clearInterval(countdownInterval);
+            }
         }
     }
 
-    function startCountdown(endTime) {
+    function startCountdownForSession(index) {
         if (countdownInterval) clearInterval(countdownInterval);
+        const item = scheduleItems[index];
+        const endTimeStr = item.time.split(' - ')[1];
+        
         countdownInterval = setInterval(() => {
             const now = new Date();
-            const [h, m] = endTime.split(':').map(Number);
+            const [h, m] = endTimeStr.split(':').map(Number);
             const end = new Date(now);
             end.setHours(h, m, 0);
             const diff = end - now;
+            
+            const timerSpan = document.getElementById(`countdown-${index}`);
+            if (!timerSpan) return;
+            
             if (diff <= 0) {
-                document.getElementById('countdownTimer').textContent = '00:00';
+                timerSpan.textContent = '00:00';
                 clearInterval(countdownInterval);
-                checkCurrentSession(); // cập nhật lại
+                // Đánh dấu đã hoàn thành
+                item.completed = true;
+                // Phát âm thanh thông báo
+                document.getElementById('notificationSound').play().catch(e => console.log('Audio play failed:', e));
+                // Cập nhật insight
+                updateDailyInsight();
+                // Xóa active session
+                activeSessionIndex = -1;
+                renderSchedule();
                 return;
             }
             const minutes = Math.floor(diff / 60000);
             const seconds = Math.floor((diff % 60000) / 1000);
-            document.getElementById('countdownTimer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerSpan.textContent = `⏳ ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }, 1000);
     }
 
@@ -355,7 +425,7 @@ const App = (function() {
         for (let i = 0; i < 4; i++) {
             const randomSubject = subjects[Math.floor(Math.random() * subjects.length)];
             const randomTime = times[Math.floor(Math.random() * times.length)];
-            scheduleItems.push({ subject: randomSubject, time: randomTime });
+            scheduleItems.push({ subject: randomSubject, time: randomTime, completed: false });
         }
         renderSchedule();
     }
@@ -392,6 +462,95 @@ const App = (function() {
     }
 
     // ============================================
+    // BIOMETRICS ANIMATION
+    // ============================================
+    function startBiometricsAnimation() {
+        if (biometricsInterval) clearInterval(biometricsInterval);
+        biometricsInterval = setInterval(() => {
+            const heartElem = document.getElementById('heartRate');
+            const focusElem = document.getElementById('focusLevel');
+            const burnoutElem = document.getElementById('burnoutRisk');
+            
+            let heart = parseInt(heartElem.textContent);
+            let focus = parseInt(focusElem.textContent);
+            let burnout = parseInt(burnoutElem.textContent);
+            
+            // Dao động nhẹ
+            heart += Math.floor(Math.random() * 3) - 1; // -1,0,1
+            focus += Math.floor(Math.random() * 3) - 1;
+            
+            // Giới hạn
+            heart = Math.max(60, Math.min(100, heart));
+            focus = Math.max(60, Math.min(100, focus));
+            
+            heartElem.textContent = heart + ' bpm';
+            focusElem.textContent = focus + '%';
+            
+            // Tính burnout risk dựa trên streak và năng lượng
+            burnout = Math.min(100, streak * 5 + (100 - energy) * 0.5 + (heart - 70) * 0.5);
+            burnout = Math.max(0, Math.floor(burnout));
+            burnoutElem.textContent = burnout + '%';
+            
+            // Nếu burnout > 50, twin cảnh báo
+            if (burnout > 50) {
+                document.getElementById('twinStatus').textContent = '⚠️ Bạn cần nghỉ ngơi!';
+                document.getElementById('twinAvatar').className = 'twin-avatar stressed';
+            } else {
+                document.getElementById('twinStatus').textContent = 'Hệ thống đồng bộ ổn định';
+                document.getElementById('twinAvatar').className = 'twin-avatar idle';
+            }
+        }, 3000);
+    }
+
+    // ============================================
+    // KNOWLEDGE GRAPH (có thể click)
+    // ============================================
+    function updateKnowledgeGraph(subject) {
+        const container = document.getElementById('graphContainer');
+        if (!container) return;
+        
+        const data = subjectData[subject];
+        
+        container.innerHTML = '';
+        
+        const mastered = ['Kiến thức cơ bản', 'Lý thuyết nền'];
+        mastered.forEach(skill => {
+            const node = document.createElement('span');
+            node.className = 'skill-node mastered';
+            node.textContent = `✅ ${skill}`;
+            container.appendChild(node);
+        });
+        
+        const improving = ['Bài tập vận dụng'];
+        improving.forEach(skill => {
+            const node = document.createElement('span');
+            node.className = 'skill-node improving';
+            node.textContent = `📈 ${skill}`;
+            container.appendChild(node);
+        });
+        
+        data.weaknesses.forEach(skill => {
+            const node = document.createElement('span');
+            node.className = 'skill-node weak';
+            node.textContent = `⚠️ ${skill}`;
+            node.onclick = () => showRoadmapPopup(skill);
+            container.appendChild(node);
+        });
+    }
+
+    async function showRoadmapPopup(skill) {
+        const modal = document.getElementById('roadmapPopup');
+        const content = document.getElementById('popupContent');
+        content.textContent = 'Đang tải lộ trình...';
+        modal.classList.add('show');
+        
+        const data = subjectData[currentSubject];
+        const prompt = `Hãy tạo một lộ trình học cấp tốc cho kỹ năng "${skill}" trong môn ${data.name}. Gồm 3-5 bước ngắn gọn, dễ hiểu.`;
+        const roadmap = await callGemini(prompt);
+        content.innerHTML = roadmap.replace(/\n/g, '<br>');
+    }
+
+    // ============================================
     // AI TUTOR CHAT
     // ============================================
     async function handleChat() {
@@ -412,6 +571,46 @@ const App = (function() {
     }
 
     // ============================================
+    // MODAL CÀI ĐẶT API
+    // ============================================
+    function setupApiModal() {
+        const modal = document.getElementById('apiModal');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const saveBtn = document.getElementById('saveApiBtn');
+        const apiInput = document.getElementById('apiKeyInput');
+
+        settingsBtn.addEventListener('click', () => {
+            apiInput.value = getApiKey() || '';
+            modal.classList.add('show');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('show');
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const key = apiInput.value.trim();
+            if (key) {
+                localStorage.setItem('gemini_api_key', key);
+                alert('Đã lưu API key!');
+                modal.classList.remove('show');
+                // Reload để dùng key mới
+                location.reload();
+            } else {
+                alert('Vui lòng nhập key');
+            }
+        });
+
+        // Click ngoài modal để đóng
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+    }
+
+    // ============================================
     // KHỞI TẠO VÀ SỰ KIỆN
     // ============================================
     function init() {
@@ -424,8 +623,8 @@ const App = (function() {
         document.getElementById('streakBadge').textContent = `🔥 ${streak} ngày`;
 
         scheduleItems = Storage.load('schedule', [
-            { subject: '📘 Tiếng Anh', time: '08:00 - 09:30' },
-            { subject: '📐 Toán', time: '09:45 - 11:15' }
+            { subject: '📘 Tiếng Anh', time: '08:00 - 09:30', completed: false },
+            { subject: '📐 Toán', time: '09:45 - 11:15', completed: false }
         ]);
         renderSchedule();
 
@@ -440,6 +639,7 @@ const App = (function() {
             currentSubject = e.target.value;
             initChart(currentSubject);
             updateDailyInsight();
+            updateKnowledgeGraph(currentSubject);
         });
 
         // Chat
@@ -471,21 +671,26 @@ const App = (function() {
             }
             await addNewScore(score);
             input.value = '';
-            updateStreak(); // thêm điểm cũng tính là học tập
+            updateStreak();
         });
 
-        // Giả lập nhịp tim và focus thay đổi
-        setInterval(() => {
-            document.getElementById('heartRate').textContent = Math.floor(60 + Math.random() * 20) + ' bpm';
-            document.getElementById('focusLevel').textContent = Math.floor(70 + Math.random() * 25) + '%';
-            // Tính burnout risk dựa trên streak và năng lượng
-            const risk = Math.min(100, streak * 5 + (100 - energy) * 0.5);
-            document.getElementById('burnoutRisk').textContent = Math.floor(risk) + '%';
-        }, 5000);
+        // Biometrics animation
+        startBiometricsAnimation();
+
+        // Knowledge Graph ban đầu
+        updateKnowledgeGraph(currentSubject);
+
+        // Đóng popup roadmap
+        document.getElementById('closePopupBtn').addEventListener('click', () => {
+            document.getElementById('roadmapPopup').classList.remove('show');
+        });
+
+        // Cài đặt modal API
+        setupApiModal();
 
         // Kiểm tra ca học mỗi phút
-        setInterval(checkCurrentSession, 60000);
-        checkCurrentSession();
+        setInterval(checkActiveSession, 60000);
+        checkActiveSession();
     }
 
     // Public API
