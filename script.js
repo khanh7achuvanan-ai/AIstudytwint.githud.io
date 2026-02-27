@@ -2,7 +2,7 @@
 // CẤU HÌNH VÀ BIẾN TOÀN CỤC
 // ============================================
 const CONFIG = {
-    GEMINI_ENDPOINT: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
+    GEMINI_ENDPOINT: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent' // model mới nhất
 };
 
 // Module quản lý lưu trữ
@@ -137,26 +137,35 @@ const App = (function() {
     // ============================================
     async function callGemini(prompt) {
         const apiKey = getApiKey();
+        console.log('API Key:', apiKey ? 'Đã có' : 'Chưa có');
         if (!apiKey) {
             console.warn('Chưa có API key, dùng mock response');
             return mockAIResponse(prompt);
         }
         try {
-            const response = await fetch(`${CONFIG.GEMINI_ENDPOINT}?key=${apiKey}`, {
+            const url = `${CONFIG.GEMINI_ENDPOINT}?key=${apiKey}`;
+            console.log('Fetching URL:', url);
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }]
                 })
             });
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
             const data = await response.json();
+            console.log('Gemini response:', data);
             if (data.candidates && data.candidates[0]) {
                 return data.candidates[0].content.parts[0].text;
             } else {
-                throw new Error('Invalid response');
+                throw new Error('Invalid response structure: ' + JSON.stringify(data));
             }
         } catch (error) {
-            console.error('Lỗi gọi Gemini:', error);
+            console.error('Lỗi gọi Gemini chi tiết:', error);
             return mockAIResponse(prompt);
         }
     }
@@ -178,16 +187,21 @@ const App = (function() {
     // CẬP NHẬT DAILY INSIGHT TỪ AI
     // ============================================
     async function updateDailyInsight() {
-        const data = subjectData[currentSubject];
-        const lastScore = data.real[data.real.length - 1];
-        const focus = document.getElementById('focusLevel').textContent;
-        const heart = document.getElementById('heartRate').textContent;
-        const completedSessions = scheduleItems.filter(item => item.completed).length;
-        
-        const prompt = `Học sinh môn ${data.name} có điểm hiện tại ${lastScore}, mức tập trung ${focus}, nhịp tim ${heart}. Đã hoàn thành ${completedSessions} ca học hôm nay. Hãy đưa ra một lời khuyên học tập ngắn gọn (dưới 100 ký tự), tập trung vào điểm yếu: ${data.weaknesses.join(', ')}.`;
-        
-        const advice = await callGemini(prompt);
-        document.getElementById('dailyTip').textContent = advice;
+        try {
+            const data = subjectData[currentSubject];
+            const lastScore = data.real[data.real.length - 1];
+            const focus = document.getElementById('focusLevel').textContent;
+            const heart = document.getElementById('heartRate').textContent;
+            const completedSessions = scheduleItems.filter(item => item.completed).length;
+            
+            const prompt = `Học sinh môn ${data.name} có điểm hiện tại ${lastScore}, mức tập trung ${focus}, nhịp tim ${heart}. Đã hoàn thành ${completedSessions} ca học hôm nay. Hãy đưa ra một lời khuyên học tập ngắn gọn (dưới 100 ký tự), tập trung vào điểm yếu: ${data.weaknesses.join(', ')}.`;
+            
+            const advice = await callGemini(prompt);
+            document.getElementById('dailyTip').textContent = advice;
+        } catch (e) {
+            console.error('Lỗi khi cập nhật daily insight:', e);
+            document.getElementById('dailyTip').textContent = 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+        }
     }
 
     // ============================================
