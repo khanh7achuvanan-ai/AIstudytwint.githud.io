@@ -2,80 +2,78 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <title>AI Study Twin Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Study Twin - Next Gen Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-    <header>
-        <div class="header-content">
-            <h1>AI Study Twin</h1>
-            <p class="subtitle">Predictive Learning & Bio-Sync Active</p>
+<header>
+    <div class="header-top">
+        <h1>AI Study Twin</h1>
+
+        <!-- SUBJECT SWITCHER -->
+        <select id="subjectSelector">
+            <option value="math">Toán</option>
+            <option value="english">Tiếng Anh</option>
+            <option value="physics">Vật Lý</option>
+        </select>
+    </div>
+    <p class="subtitle">Predictive Learning & Digital Twin Intelligence</p>
+</header>
+
+<div class="dashboard">
+
+    <!-- LEFT PANEL -->
+    <div class="glass-panel">
+        <h2>🧠 Daily Insight</h2>
+
+        <div class="tip-box" id="dailyTip"></div>
+
+        <div class="bio-sync">
+            <span>❤️ Nhịp tim</span>
+            <b id="heartRate">72 bpm</b>
         </div>
-        
-        <div class="subject-picker">
-            <label for="subjectSelect">Đang theo dõi:</label>
-            <select id="subjectSelect" onchange="updateSubject()">
-                <option value="math">Toán Học (Toán giải tích)</option>
-                <option value="physics">Vật Lý (Điện xoay chiều)</option>
-                <option value="english">Tiếng Anh (IELTS Reading)</option>
-            </select>
+
+        <div class="bio-sync">
+            <span>⚡ Tập trung</span>
+            <b id="focusLevel">85%</b>
         </div>
-    </header>
+    </div>
 
-    <main class="dashboard">
-        <section class="glass-panel">
-            <h2>🧠 Daily Wisdom & Flow</h2>
-            <div class="subject-badge" id="wisdomBadge">Môn: Toán Học</div>
-            <div class="tip-box">
-                <strong id="tipTitle">💡 Kỹ thuật: Spaced Repetition</strong><br>
-                <span class="muted-text" id="tipDesc">Hệ thống nhận thấy bạn hay quên từ vựng. Hãy ôn lại thẻ Flashcard tuần trước.</span>
-            </div>
-            <div class="bio-stats">
-                <div class="bio-sync">
-                    <span>❤️ Nhịp tim: <b>72 bpm</b></span>
-                    <span class="status-optimal">Tối ưu</span>
-                </div>
-                <div class="bio-sync">
-                    <span>⚡ Tập trung: <b>85%</b></span>
-                    <span class="status-flow">🔥 Flow State</span>
-                </div>
-            </div>
-        </section>
+    <!-- CENTER PANEL -->
+    <div class="glass-panel">
+        <h2>🤖 Digital Twin</h2>
 
-        <section class="glass-panel main-twin">
-            <h2>🌐 The Twin (Bản sao số)</h2>
-            <div class="twin-container">
-                <div class="digital-twin" id="twinAvatar">🤖</div>
-                <div class="twin-status" id="twinStatus">Hệ thống đồng bộ: Ổn định.</div>
+        <div class="twin-container">
+            <div class="digital-twin" id="twinAvatar">🤖</div>
+            <div class="twin-status" id="twinStatus">
+                Hệ thống đồng bộ ổn định
             </div>
-        </section>
+        </div>
+    </div>
 
-        <section class="glass-panel">
-            <h2>🌍 Research & Tutor</h2>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Nhập bài toán hoặc khái niệm...">
-                <button onclick="simulateSearch()">Scan</button>
-            </div>
-            <div class="tutor-header">💬 AI Tutor Lab <small id="tutorSub">(Toán)</small></div>
-            <div class="tutor-chat" id="chatBox">
-                <p><b>AI Tutor:</b> Chào bạn, tôi đã sẵn sàng hỗ trợ môn học này!</p>
-            </div>
-        </section>
+    <!-- RIGHT PANEL -->
+    <div class="glass-panel">
+        <h2>💬 AI Tutor Lab</h2>
 
-        <section class="glass-panel roadmap-panel">
-            <div class="panel-header-inline">
-                <h2>📈 Dự báo tương lai (Predictive Roadmap)</h2>
-                <span id="chartLabel" class="chart-label-text">Dữ liệu: Toán Học</span>
-            </div>
-            <div class="chart-container">
-                <canvas id="roadmapChart"></canvas>
-            </div>
-        </section>
-    </main>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Nhập câu hỏi...">
+            <button id="searchBtn">Scan</button>
+        </div>
 
-    <script src="script.js"></script>
+        <div class="tutor-chat" id="chatBox"></div>
+    </div>
+
+    <!-- FULL WIDTH -->
+    <div class="glass-panel roadmap-panel">
+        <h2>📈 Predictive Roadmap</h2>
+        <canvas id="roadmapChart"></canvas>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
