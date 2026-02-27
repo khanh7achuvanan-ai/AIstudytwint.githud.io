@@ -3,62 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Study Twin Dashboard</title>
+    <title>AI Study Twin - Next Gen Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
     <header>
-        <h1>AI Study Twin</h1>
-        <p class="subtitle">Predictive Learning & Bio-Sync Active</p>
+        <div class="header-content">
+            <h1>AI Study Twin</h1>
+            <p class="subtitle">Predictive Learning & Bio-Sync Active</p>
+        </div>
+        
+        <div class="subject-picker">
+            <label for="subjectSelect">Đang theo dõi:</label>
+            <select id="subjectSelect" onchange="updateSubject()">
+                <option value="math">Toán Học (Toán giải tích)</option>
+                <option value="physics">Vật Lý (Điện xoay chiều)</option>
+                <option value="english">Tiếng Anh (IELTS Reading)</option>
+            </select>
+        </div>
     </header>
 
-    <div class="dashboard">
-        <div class="glass-panel">
+    <main class="dashboard">
+        <section class="glass-panel">
             <h2>🧠 Daily Wisdom & Flow</h2>
+            <div class="subject-badge" id="wisdomBadge">Môn: Toán Học</div>
             <div class="tip-box">
-                <strong>💡 Kỹ thuật hôm nay: Spaced Repetition</strong><br>
-                <span class="muted-text">Hệ thống nhận thấy bạn hay quên từ vựng sau 3 ngày. Hôm nay Twin sẽ ưu tiên ôn tập lại các thẻ Flashcard từ tuần trước.</span>
+                <strong id="tipTitle">💡 Kỹ thuật: Spaced Repetition</strong><br>
+                <span class="muted-text" id="tipDesc">Hệ thống nhận thấy bạn hay quên từ vựng. Hãy ôn lại thẻ Flashcard tuần trước.</span>
             </div>
-            <div class="bio-sync">
-                <span>❤️ Nhịp tim: <b>72 bpm</b></span>
-                <span class="status-optimal">Trạng thái: Tối ưu</span>
+            <div class="bio-stats">
+                <div class="bio-sync">
+                    <span>❤️ Nhịp tim: <b>72 bpm</b></span>
+                    <span class="status-optimal">Tối ưu</span>
+                </div>
+                <div class="bio-sync">
+                    <span>⚡ Tập trung: <b>85%</b></span>
+                    <span class="status-flow">🔥 Flow State</span>
+                </div>
             </div>
-            <div class="bio-sync">
-                <span>⚡ Mức độ tập trung: <b>85%</b></span>
-                <span>🔥 Flow State</span>
-            </div>
-        </div>
+        </section>
 
-        <div class="glass-panel">
+        <section class="glass-panel main-twin">
             <h2>🌐 The Twin (Bản sao số)</h2>
             <div class="twin-container">
                 <div class="digital-twin" id="twinAvatar">🤖</div>
-                <div class="twin-status" id="twinStatus">Hệ thống đồng bộ: Ổn định. Sẵn sàng học tập!</div>
+                <div class="twin-status" id="twinStatus">Hệ thống đồng bộ: Ổn định.</div>
             </div>
-        </div>
+        </section>
 
-        <div class="glass-panel">
-            <h2>🌍 Deep Research Hub</h2>
+        <section class="glass-panel">
+            <h2>🌍 Research & Tutor</h2>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Nhập bài toán hoặc khái niệm...">
                 <button onclick="simulateSearch()">Scan</button>
             </div>
-            <h2>💬 AI Tutor Lab</h2>
+            <div class="tutor-header">💬 AI Tutor Lab <small id="tutorSub">(Toán)</small></div>
             <div class="tutor-chat" id="chatBox">
-                <p><b>AI Tutor:</b> Chào bạn, tôi đã phân tích lỗi sai bài Toán hôm qua của bạn. Bạn đang nhầm lẫn ở bước đặt ẩn phụ. Cần tôi giải thích lại không?</p>
+                <p><b>AI Tutor:</b> Chào bạn, tôi đã sẵn sàng hỗ trợ môn học này!</p>
             </div>
-        </div>
+        </section>
 
-        <div class="glass-panel roadmap-panel">
-            <h2>📈 Dự báo tương lai (Predictive Roadmap)</h2>
+        <section class="glass-panel roadmap-panel">
+            <div class="panel-header-inline">
+                <h2>📈 Dự báo tương lai (Predictive Roadmap)</h2>
+                <span id="chartLabel" class="chart-label-text">Dữ liệu: Toán Học</span>
+            </div>
             <div class="chart-container">
                 <canvas id="roadmapChart"></canvas>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <script src="script.js" defer></script>
+    <script src="script.js"></script>
 </body>
 </html>
