@@ -49,28 +49,83 @@ function initChart() {
     });
 }
 
-// Hàm mô phỏng AI Deep Search
-function simulateSearch() {
-    const inputField = document.getElementById('searchInput');
-    const input = inputField.value.trim();
+// 1. Cấu hình AI (Tích hợp thực tế)
+const API_KEY = "AIzaSyC4BWtU9rD4Yv2cw_Sus1VhAXJ30GLw1Ho"; 
+
+async function handleAISend() {
+    const input = document.getElementById('userInput');
     const chatBox = document.getElementById('chatBox');
-    
-    if(!input) return;
+    const userText = input.value.trim();
 
-    // Hiển thị câu hỏi của user
-    chatBox.innerHTML += `<p style="color: var(--neon-blue);"><b>Bạn:</b> ${input}</p>`;
-    chatBox.innerHTML += `<p id="loadingMsg"><b>System:</b> <i>Đang quét WolframAlpha & Chegg...</i></p>`;
-    
-    // Tự động cuộn xuống cuối cùng
+    if (!userText) return;
+
+    // Hiển thị tin nhắn người dùng
+    chatBox.innerHTML += `<div class="user-msg">${userText}</div>`;
+    input.value = "";
+
+    // Hiển thị trạng thái chờ
+    const loadingMsg = document.createElement("p");
+    loadingMsg.className = "ai-msg";
+    loadingMsg.innerText = "Đang tư duy...";
+    chatBox.appendChild(loadingMsg);
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `Bạn là trợ lý học tập cá nhân. Hãy trả lời ngắn gọn câu hỏi sau: ${userText}` }] }]
+            })
+        });
+
+        const data = await response.json();
+        const aiResponse = data.candidates[0].content.parts[0].text;
+
+        loadingMsg.innerText = aiResponse;
+    } catch (error) {
+        loadingMsg.innerText = "Lỗi kết nối. Vui lòng kiểm tra API Key.";
+    }
     chatBox.scrollTop = chatBox.scrollHeight;
-    inputField.value = '';
+}
 
-    // Mô phỏng độ trễ (delay) khi AI đang "suy nghĩ"
-    setTimeout(() => {
-        document.getElementById('loadingMsg').remove();
-        chatBox.innerHTML += `<p><b>AI Tutor:</b> Dựa trên dữ liệu toàn cầu, cách giải tối ưu nhất cho "${input}" là sử dụng phương pháp chia nhỏ vấn đề (First Principles). Đây là các bước chi tiết...</p>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 1500);
+// 2. Khởi tạo biểu đồ đường (Dự báo tương lai)
+const ctx = document.getElementById('roadmapChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Tiến độ học tập (%)',
+            data: [45, 52, 48, 70, 85, 93],
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { display: false }, ticks: { color: '#ffffff66' } },
+            y: { grid: { color: '#ffffff11' }, ticks: { color: '#ffffff66' } }
+        }
+    }
+});
+
+// 3. Hiệu ứng mô phỏng Advice
+const tips = [
+    "Hôm nay bạn tập trung tốt hơn 15% so với hôm qua.",
+    "Kỹ thuật Pomodoro 50/10 sẽ giúp bạn giảm stress lúc này.",
+    "Dữ liệu cho thấy bạn nên ôn lại môn Toán vào lúc 8h tối."
+];
+
+setInterval(() => {
+    const randomTip = tips[Math.floor(Math.random() * tips.length)];
+    document.getElementById('aiAdvice').innerText = randomTip;
+}, 5000);
 }
 
 // Lắng nghe sự kiện Enter trong ô tìm kiếm
@@ -103,5 +158,6 @@ document.getElementById('twinAvatar').addEventListener('click', function() {
 window.onload = () => {
     initChart();
 };
+
 
 
