@@ -1,112 +1,89 @@
-let roadmapChart;
+let chart;
+const subjectSelector = document.getElementById("subjectSelector");
+const dailyTip = document.getElementById("dailyTip");
+const chatBox = document.getElementById("chatBox");
+const twinAvatar = document.getElementById("twinAvatar");
+const twinStatus = document.getElementById("twinStatus");
 
-// Dữ liệu mô phỏng cho từng môn học
 const subjectData = {
     math: {
-        label: "Toán Học",
-        badge: "Toán Giải Tích",
-        realPoints: [6.5, 7.0, 7.2, 7.8, null, null],
-        predPoints: [null, null, null, 7.8, 8.5, 9.2],
-        tipTitle: "💡 Kỹ thuật: Spaced Repetition",
-        tipDesc: "Bạn thường quên công thức Logarit sau 3 ngày. Hãy ôn lại ngay!"
-    },
-    physics: {
-        label: "Vật Lý",
-        badge: "Điện Xoay Chiều",
-        realPoints: [5.0, 5.5, 6.5, 6.8, null, null],
-        predPoints: [null, null, null, 6.8, 7.5, 8.0],
-        tipTitle: "💡 Kỹ thuật: Feynman",
-        tipDesc: "Hãy thử giải thích định luật Ohm cho 'Twin' của bạn bằng ngôn ngữ đơn giản."
+        tip: "🔢 Ôn lại chuyên đề Vector. Twin dự báo có nguy cơ giảm 0.8 điểm nếu không luyện tập.",
+        real: [6.5, 7.0, 7.2, 7.8],
+        predict: [7.8, 8.4, 9.0]
     },
     english: {
-        label: "Tiếng Anh",
-        badge: "IELTS Reading",
-        realPoints: [7.5, 7.5, 8.0, 8.5, null, null],
-        predPoints: [null, null, null, 8.5, 8.8, 9.0],
-        tipTitle: "💡 Kỹ thuật: Skimming",
-        tipDesc: "Kỹ năng đọc lướt của bạn đang cải thiện. Tập trung vào từ khóa (Keywords)."
+        tip: "📘 Bạn hay quên từ vựng sau 3 ngày. Hệ thống kích hoạt Spaced Repetition.",
+        real: [7.0, 7.3, 7.8, 8.1],
+        predict: [8.1, 8.7, 9.1]
+    },
+    physics: {
+        tip: "⚡ Sai số trong bài động lượng đang tăng. Cần luyện thêm bài tập nâng cao.",
+        real: [6.0, 6.8, 7.5, 7.9],
+        predict: [7.9, 8.2, 8.8]
     }
 };
 
-// Khởi tạo biểu đồ
-function initChart(subjectKey) {
-    const ctx = document.getElementById('roadmapChart').getContext('2d');
-    const data = subjectData[subjectKey];
+function initChart(subject = "math") {
+    const ctx = document.getElementById("roadmapChart");
 
-    if (roadmapChart) roadmapChart.destroy(); // Hủy biểu đồ cũ nếu có
+    if (chart) chart.destroy();
 
-    roadmapChart = new Chart(ctx, {
-        type: 'line',
+    const data = subjectData[subject];
+
+    chart = new Chart(ctx, {
+        type: "line",
         data: {
-            labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4 (Nay)', 'Tuần 5 (Dự báo)', 'Tuần 6 (Dự báo)'],
+            labels: ["T1", "T2", "T3", "T4", "T5*", "T6*"],
             datasets: [
                 {
-                    label: 'Điểm thực thực tế',
-                    data: data.realPoints,
-                    borderColor: '#00f3ff',
-                    backgroundColor: 'rgba(0, 243, 255, 0.1)',
-                    fill: true,
+                    label: "Thực tế",
+                    data: [...data.real, null, null],
+                    borderColor: "#00f3ff",
                     tension: 0.4
                 },
                 {
-                    label: 'Dự báo xu hướng',
-                    data: data.predPoints,
-                    borderColor: '#bc13fe',
-                    borderDash: [5, 5],
+                    label: "Dự báo",
+                    data: [null, null, null, data.real[3], ...data.predict.slice(1)],
+                    borderColor: "#bc13fe",
+                    borderDash: [5,5],
                     tension: 0.4
                 }
             ]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { labels: { color: '#f1f5f9', font: { family: 'Inter' } } }
-            },
             scales: {
-                y: { min: 0, max: 10, ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                x: { ticks: { color: '#64748b' }, grid: { display: false } }
+                y: { min: 0, max: 10 }
             }
         }
     });
+
+    dailyTip.innerText = data.tip;
 }
 
-// Hàm cập nhật toàn bộ Dashboard khi chọn môn học
-function updateSubject() {
-    const key = document.getElementById('subjectSelect').value;
-    const data = subjectData[key];
+subjectSelector.addEventListener("change", (e) => {
+    initChart(e.target.value);
+});
 
-    // Cập nhật text
-    document.getElementById('wisdomBadge').innerText = `Môn: ${data.label}`;
-    document.getElementById('chartLabel').innerText = `Dữ liệu: ${data.label}`;
-    document.getElementById('tipTitle').innerText = data.tipTitle;
-    document.getElementById('tipDesc').innerText = data.tipDesc;
-    document.getElementById('tutorSub').innerText = `(${data.label})`;
-    
-    // Cập nhật biểu đồ
-    initChart(key);
+document.getElementById("searchBtn").addEventListener("click", () => {
+    const input = document.getElementById("searchInput");
+    if (!input.value) return;
 
-    // Hiệu ứng thông báo từ AI
-    const chatBox = document.getElementById('chatBox');
-    chatBox.innerHTML = `<p><b>AI Tutor:</b> Đã chuyển dữ liệu sang môn <b>${data.label}</b>. Tôi đang tải các bài tập phù hợp...</p>`;
-}
-
-// Giữ lại các hàm cũ nhưng tối ưu hơn
-function simulateSearch() {
-    const input = document.getElementById('searchInput').value;
-    const chatBox = document.getElementById('chatBox');
-    if(!input) return;
-
-    chatBox.innerHTML += `<p style="color: var(--neon-blue);"><b>Bạn:</b> ${input}</p>`;
+    chatBox.innerHTML += `<p><b>Bạn:</b> ${input.value}</p>`;
+    chatBox.innerHTML += `<p><b>AI:</b> Phân tích lỗi sai và đề xuất phương pháp First Principles...</p>`;
     chatBox.scrollTop = chatBox.scrollHeight;
+    input.value = "";
+});
+
+twinAvatar.addEventListener("click", () => {
+    twinAvatar.style.background = "radial-gradient(circle, #ffaa00, transparent)";
+    twinAvatar.style.boxShadow = "0 0 40px #ffaa00";
+    twinStatus.innerText = "⚠ Phát hiện stress - đề xuất nghỉ 2 phút";
 
     setTimeout(() => {
-        chatBox.innerHTML += `<p><b>AI Tutor:</b> Đang phân tích "${input}" trong cơ sở dữ liệu... Đã tìm thấy 3 phương pháp giải nhanh!</p>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 1000);
-}
+        twinAvatar.style.background = "radial-gradient(circle, #00f3ff, transparent)";
+        twinAvatar.style.boxShadow = "0 0 40px #00f3ff";
+        twinStatus.innerText = "Hệ thống đồng bộ ổn định";
+    }, 3000);
+});
 
-// Init lần đầu
-window.onload = () => {
-    initChart('math');
-};
+initChart();
