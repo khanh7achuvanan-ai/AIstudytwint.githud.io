@@ -347,4 +347,106 @@ const App = (function() {
                 });
             }
             
-            //
+            // Add schedule button
+            const addBtn = document.getElementById('addScheduleBtn');
+            if (addBtn) {
+                addBtn.addEventListener('click', () => {
+                    const subject = document.getElementById('subjectInput');
+                    const time = document.getElementById('timeSelect');
+                    const list = document.getElementById('scheduleList');
+                    
+                    if (subject && time && list && subject.value.trim()) {
+                        const item = document.createElement('div');
+                        item.className = 'schedule-item';
+                        item.innerHTML = `
+                            <span class="subject">${subject.value.trim()}</span>
+                            <span class="time">${time.value}</span>
+                        `;
+                        list.appendChild(item);
+                        subject.value = '';
+                        addXP(3);
+                    }
+                });
+            }
+            
+            // Generate AI schedule button
+            const generateBtn = document.getElementById('generateScheduleBtn');
+            if (generateBtn) {
+                generateBtn.addEventListener('click', () => {
+                    const list = document.getElementById('scheduleList');
+                    if (!list) return;
+                    
+                    list.innerHTML = '';
+                    
+                    const weakSubjects = [
+                        { name: '📘 Tiếng Anh (từ vựng)', time: '07:00 - 08:30' },
+                        { name: '📐 Toán (hình học)', time: '09:00 - 10:30' },
+                        { name: '⚡ Vật Lý (điện từ)', time: '14:00 - 15:30' },
+                        { name: '🧪 Hóa Học (vô cơ)', time: '16:00 - 17:30' }
+                    ];
+                    
+                    weakSubjects.forEach(item => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'schedule-item';
+                        itemDiv.innerHTML = `
+                            <span class="subject">${item.name}</span>
+                            <span class="time">${item.time}</span>
+                        `;
+                        list.appendChild(itemDiv);
+                    });
+                    
+                    addXP(15);
+                    
+                    // Update twin status
+                    const twinStatus = document.getElementById('twinStatus');
+                    if (twinStatus) {
+                        twinStatus.textContent = '✅ AI đã tạo lịch học tối ưu!';
+                        setTimeout(() => {
+                            twinStatus.textContent = 'Hệ thống đồng bộ ổn định';
+                        }, 3000);
+                    }
+                });
+            }
+            
+            // Twin avatar click
+            const twinAvatar = document.getElementById('twinAvatar');
+            if (twinAvatar) {
+                twinAvatar.addEventListener('click', handleTwinClick);
+            }
+            
+            // Update real-time data
+            setInterval(() => {
+                const heartRate = document.getElementById('heartRate');
+                const focusLevel = document.getElementById('focusLevel');
+                
+                if (heartRate) {
+                    const hr = Math.floor(Math.random() * 20 + 65);
+                    heartRate.textContent = hr + ' bpm';
+                }
+                
+                if (focusLevel) {
+                    const focus = Math.floor(Math.random() * 20 + 75);
+                    focusLevel.textContent = focus + '%';
+                }
+                
+                // Update streak randomly
+                const streakBadge = document.getElementById('streakBadge');
+                if (streakBadge) {
+                    const streak = Math.floor(Math.random() * 5 + 3);
+                    streakBadge.textContent = `🔥 ${streak} ngày`;
+                }
+            }, 5000);
+            
+            console.log('App setup complete!');
+        },
+        
+        // Expose handleTwinClick for onclick attribute
+        handleTwinClick: handleTwinClick
+    };
+})();
+
+// Khởi động app ngay lập tức
+App.init();
+
+// Export for global use
+window.App = App;
