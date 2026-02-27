@@ -574,4 +574,98 @@ h1 {
         justify-content: space-between;
     }
 }
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 30px var(--blue-glow);
+}
+
+.modal-content h3 {
+    color: var(--blue);
+    margin-bottom: 20px;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+    color: white;
+    border-radius: 8px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Nút icon */
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    color: var(--text-secondary);
+    transition: color 0.3s;
+}
+
+.btn-icon:hover {
+    color: var(--blue);
+}
+
+/* Hiệu ứng glow cho schedule item đang học */
+.schedule-item.active-session {
+    border-left-color: var(--blue);
+    box-shadow: 0 0 15px var(--blue-glow);
+    animation: glow-pulse 1.5s infinite;
+}
+
+@keyframes glow-pulse {
+    0% { box-shadow: 0 0 10px var(--blue-glow); }
+    50% { box-shadow: 0 0 20px var(--blue); }
+    100% { box-shadow: 0 0 10px var(--blue-glow); }
+}
+
+/* Countdown nhỏ trong item */
+.schedule-item .countdown-timer {
+    font-size: 0.8rem;
+    color: var(--blue);
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+/* Popup nội dung */
+#popupContent {
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
 
