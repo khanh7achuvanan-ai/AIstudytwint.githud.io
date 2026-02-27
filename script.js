@@ -1,146 +1,105 @@
-const calendar = document.getElementById("calendar");
-const popup = document.getElementById("popup");
-const selectedDateText = document.getElementById("selectedDate");
-const subjectContainer = document.getElementById("subjectContainer");
-
-let selectedDate = null;
-let studyData = JSON.parse(localStorage.getItem("studyData")) || {};
-
-// Cấu hình API AI (Bạn hãy thay API Key của mình vào đây)
-const GEMINI_API_KEY = "AIzaSyC4BWtU9rD4Yv2cw_Sus1VhAXJ30GLw1Ho";
-
-function generateCalendar() {
-    calendar.innerHTML = "";
-    for (let i = 1; i <= 30; i++) {
-        const day = document.createElement("div");
-        day.className = "day";
-        day.innerText = i;
-        if (studyData[i]) day.classList.add("hasStudy");
-        day.onclick = () => openPopup(i);
-        calendar.appendChild(day);
-    }
-}
-
-function openPopup(date) {
-    selectedDate = date;
-    popup.classList.remove("hidden");
-    selectedDateText.innerText = "Ngày " + date;
-    renderSubjects();
-}
-
-function closePopup() {
-    popup.classList.add("hidden");
-    generateCalendar();
-    updateChart();
-    updateKnowledgeGraph();
-    analyzeWithAI(); // Tự động phân tích khi có dữ liệu mới
-}
-
-function renderSubjects() {
-    subjectContainer.innerHTML = "";
-    const subjects = studyData[selectedDate] || [];
-    subjects.forEach((sub, index) => {
-        const input = document.createElement("input");
-        input.value = sub;
-        input.style.marginBottom = "10px";
-        input.onchange = (e) => {
-            studyData[selectedDate][index] = e.target.value;
-            saveData();
-        };
-        subjectContainer.appendChild(input);
-    });
-}
-
-function addSubject() {
-    if (!studyData[selectedDate]) studyData[selectedDate] = [];
-    if (studyData[selectedDate].length >= 2) return alert("Mỗi ngày tối đa 2 môn!");
-    studyData[selectedDate].push("Môn mới");
-    saveData();
-    renderSubjects();
-}
-
-function saveData() { localStorage.setItem("studyData", JSON.stringify(studyData)); }
-
-// --- TÍNH NĂNG AI THỰC TẾ ---
-
-async function askDeepAI() {
-    const inputField = document.getElementById("aiSearchInput");
-    const display = document.getElementById("aiBox");
-    const query = inputField.value.trim();
-    if (!query) return;
-
-    display.innerHTML = "<i>AI Twin đang truy cập dữ liệu toàn cầu...</i>";
+// Khởi tạo Biểu đồ Dự báo (Roadmap Chart)
+function initChart() {
+    const ctx = document.getElementById('roadmapChart').getContext('2d');
     
-    try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: `Bạn là trợ lý học tập cá nhân. Hãy giải thích ngắn gọn và khoa học: ${query}` }]}]
-            })
-        });
-        const data = await response.json();
-        display.innerText = data.candidates[0].content.parts[0].text;
-    } catch (e) {
-        display.innerText = "Lỗi: Không thể kết nối bộ não AI. Kiểm tra API Key.";
-    }
-}
+    // Gradient cho đường thực tế
+    let gradientReal = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientReal.addColorStop(0, 'rgba(0, 243, 255, 0.5)');
+    gradientReal.addColorStop(1, 'rgba(0, 243, 255, 0.0)');
 
-function analyzeWithAI() {
-    const totalDays = Object.keys(studyData).length;
-    const aiBox = document.getElementById("aiBox");
-    
-    // Thuật toán dự báo điểm số đơn giản dựa trên dữ liệu
-    let prediction = totalDays * 0.5 + 4; 
-    prediction = prediction > 10 ? 10 : prediction;
-
-    aiBox.innerHTML = `<b>PHÂN TÍCH HÀNH VI:</b><br>Bạn đã học ${totalDays} ngày. Dự báo điểm số kỳ vọng của Digital Twin: <b>${prediction.toFixed(1)}/10</b>. Cần tối ưu thêm sự nhất quán.`;
-}
-
-// --- BIỂU ĐỒ & GRAPH ---
-
-function updateChart() {
-    const ctx = document.getElementById("studyChart").getContext("2d");
-    const total = Object.keys(studyData).length;
-
-    if(window.myChart) window.myChart.destroy();
-    window.myChart = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4 (Dự báo)"],
-            datasets: [{
-                label: "Mức độ tập trung dự kiến",
-                data: [total, total + 1, total + 3, total + 5],
-                borderColor: "#ffffff",
-                borderWidth: 1,
-                tension: 0.4,
-                fill: false
-            }]
+            labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4 (Hiện tại)', 'Tuần 5 (Dự báo)', 'Tuần 6 (Dự báo)'],
+            datasets: [
+                {
+                    label: 'Điểm số thực tế',
+                    data: [6.5, 7.0, 7.2, 7.8, null, null],
+                    borderColor: '#00f3ff',
+                    backgroundColor: gradientReal,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#00f3ff'
+                },
+                {
+                    label: 'Điểm số dự báo (Dựa trên thói quen hiện tại)',
+                    data: [null, null, null, 7.8, 8.5, 9.2],
+                    borderColor: '#bc13fe',
+                    borderDash: [5, 5], // Đường nét đứt thể hiện sự dự báo
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointBackgroundColor: '#bc13fe'
+                }
+            ]
         },
         options: {
-            scales: {
-                y: { display: false },
-                x: { ticks: { color: "white" }, grid: { display: false } }
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#e2e8f0' } },
+                tooltip: { mode: 'index', intersect: false }
             },
-            plugins: { legend: { display: false } }
+            scales: {
+                x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 0, max: 10 }
+            },
+            interaction: { mode: 'nearest', axis: 'x', intersect: false }
         }
     });
 }
 
-function updateKnowledgeGraph() {
-    const kg = document.getElementById("knowledgeGraph");
-    kg.innerHTML = "";
-    let subjects = new Set();
-    Object.values(studyData).forEach(arr => arr.forEach(sub => subjects.add(sub)));
-    subjects.forEach(sub => {
-        const node = document.createElement("div");
-        node.className = "node";
-        node.innerText = sub;
-        kg.appendChild(node);
-    });
+// Hàm mô phỏng AI Deep Search
+function simulateSearch() {
+    const inputField = document.getElementById('searchInput');
+    const input = inputField.value.trim();
+    const chatBox = document.getElementById('chatBox');
+    
+    if(!input) return;
+
+    // Hiển thị câu hỏi của user
+    chatBox.innerHTML += `<p style="color: var(--neon-blue);"><b>Bạn:</b> ${input}</p>`;
+    chatBox.innerHTML += `<p id="loadingMsg"><b>System:</b> <i>Đang quét WolframAlpha & Chegg...</i></p>`;
+    
+    // Tự động cuộn xuống cuối cùng
+    chatBox.scrollTop = chatBox.scrollHeight;
+    inputField.value = '';
+
+    // Mô phỏng độ trễ (delay) khi AI đang "suy nghĩ"
+    setTimeout(() => {
+        document.getElementById('loadingMsg').remove();
+        chatBox.innerHTML += `<p><b>AI Tutor:</b> Dựa trên dữ liệu toàn cầu, cách giải tối ưu nhất cho "${input}" là sử dụng phương pháp chia nhỏ vấn đề (First Principles). Đây là các bước chi tiết...</p>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 1500);
 }
 
-// Khởi chạy hệ thống
-generateCalendar();
-updateChart();
-updateKnowledgeGraph();
+// Lắng nghe sự kiện Enter trong ô tìm kiếm
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        simulateSearch();
+    }
+});
+
+// Sự kiện tương tác với Twin Avatar (Mô phỏng Bio-Sync)
+document.getElementById('twinAvatar').addEventListener('click', function() {
+    const statusText = document.getElementById('twinStatus');
+    
+    // Chuyển sang trạng thái cảnh báo (Cam)
+    this.style.background = 'radial-gradient(circle, var(--neon-orange) 0%, transparent 70%)';
+    this.style.boxShadow = '0 0 50px var(--neon-orange)';
+    statusText.innerText = 'Phát hiện căng thẳng. Đề xuất bài tập thở 2 phút!';
+    statusText.style.color = 'var(--neon-orange)';
+    
+    // Tự động hồi phục sau 4 giây (Trở về Xanh)
+    setTimeout(() => {
+        this.style.background = 'radial-gradient(circle, var(--neon-blue) 0%, transparent 70%)';
+        this.style.boxShadow = '0 0 50px var(--neon-blue)';
+        statusText.innerText = 'Hệ thống đồng bộ: Ổn định. Sẵn sàng học tập!';
+        statusText.style.color = 'var(--neon-blue)';
+    }, 4000);
+});
+
+// Chạy khởi tạo biểu đồ khi trang web load xong
+window.onload = () => {
+    initChart();
+};
