@@ -1,8 +1,10 @@
 // ============================================
-// CẤU HÌNH VÀ BIẾN TOÀN CỤC
+// CẤU HÌNH VÀ BIẂN TOÀN CỤC
 // ============================================
 const CONFIG = {
-    GEMINI_ENDPOINT: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent' // model mới nhất
+    // Endpoint chính xác của Gemini API
+    GEMINI_ENDPOINT: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+    // Bạn có thể dùng gemini-1.5-pro hoặc gemini-1.5-flash tùy thích
 };
 
 // Module quản lý lưu trữ
@@ -27,6 +29,20 @@ const Storage = {
 // Lấy API key từ localStorage
 function getApiKey() {
     return localStorage.getItem('gemini_api_key');
+}
+
+// Mock response khi không có key hoặc lỗi
+function mockAIResponse(prompt) {
+    if (prompt.includes('insight')) {
+        return 'Học tập trung vào điểm yếu, nghỉ ngơi hợp lý để đạt kết quả tốt.';
+    }
+    if (prompt.includes('dự báo')) {
+        return '8.4, 8.7';
+    }
+    if (prompt.includes('lộ trình')) {
+        return 'Bước 1: Ôn lại lý thuyết. Bước 2: Làm bài tập cơ bản. Bước 3: Nâng cao.';
+    }
+    return 'Tôi là AI trợ lý học tập, sẵn sàng hỗ trợ bạn!';
 }
 
 // ============================================
@@ -133,18 +149,17 @@ const App = (function() {
     }
 
     // ============================================
-    // HÀM GỌI GEMINI API (lấy key từ localStorage)
+    // HÀM GỌI GEMINI API (sửa endpoint và xử lý lỗi)
     // ============================================
     async function callGemini(prompt) {
         const apiKey = getApiKey();
-        console.log('API Key:', apiKey ? 'Đã có' : 'Chưa có');
         if (!apiKey) {
-            console.warn('Chưa có API key, dùng mock response');
+            console.warn('Chưa có API key, dùng mock');
             return mockAIResponse(prompt);
         }
         try {
             const url = `${CONFIG.GEMINI_ENDPOINT}?key=${apiKey}`;
-            console.log('Fetching URL:', url);
+            console.log('Gọi Gemini URL:', url);
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -162,25 +177,12 @@ const App = (function() {
             if (data.candidates && data.candidates[0]) {
                 return data.candidates[0].content.parts[0].text;
             } else {
-                throw new Error('Invalid response structure: ' + JSON.stringify(data));
+                throw new Error('Invalid response format');
             }
         } catch (error) {
             console.error('Lỗi gọi Gemini chi tiết:', error);
             return mockAIResponse(prompt);
         }
-    }
-
-    function mockAIResponse(prompt) {
-        if (prompt.includes('insight')) {
-            return 'Học đều các môn, tập trung vào điểm yếu để cải thiện.';
-        }
-        if (prompt.includes('dự báo')) {
-            return '8.4, 8.7';
-        }
-        if (prompt.includes('lộ trình')) {
-            return 'Ôn tập theo từng bước: 1. Xem lại lý thuyết, 2. Làm bài tập cơ bản, 3. Nâng cao dần.';
-        }
-        return 'Chăm chỉ học tập bạn nhé!';
     }
 
     // ============================================
@@ -198,9 +200,9 @@ const App = (function() {
             
             const advice = await callGemini(prompt);
             document.getElementById('dailyTip').textContent = advice;
-        } catch (e) {
-            console.error('Lỗi khi cập nhật daily insight:', e);
-            document.getElementById('dailyTip').textContent = 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+        } catch (error) {
+            console.error('Lỗi cập nhật insight:', error);
+            document.getElementById('dailyTip').textContent = 'Hãy cố gắng học tập đều đặn!';
         }
     }
 
@@ -208,7 +210,7 @@ const App = (function() {
     // DỰ BÁO ĐIỂM DỰA TRÊN TRUNG BÌNH CỘNG (không cần AI)
     // ============================================
     function predictScores(scores) {
-        if (scores.length < 2) return [scores[0] + 0.5, scores[0] + 1.0];
+        if (scores.length < 2) return [scores[0] + 0.5, scores[0] + 1.0].map(v => Math.min(10, Math.max(0, v)));
         const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
         const trend = (scores[scores.length - 1] - scores[0]) / scores.length;
         return [
@@ -434,7 +436,7 @@ const App = (function() {
     // AI tạo lịch ngẫu nhiên
     function generateAISchedule() {
         const subjects = Object.values(subjectData).map(s => s.icon + ' ' + s.name);
-        const times = ['07:30-09:00', '09:15-10:45', '13:30-15:00', '15:15-16:45', '19:00-20:30'];
+        const times = ['07:30 - 09:00', '09:15 - 10:45', '13:30 - 15:00', '15:15 - 16:45', '19:00 - 20:30'];
         scheduleItems = [];
         for (let i = 0; i < 4; i++) {
             const randomSubject = subjects[Math.floor(Math.random() * subjects.length)];
