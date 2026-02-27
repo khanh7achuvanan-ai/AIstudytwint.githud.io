@@ -1,10 +1,12 @@
-/* ===== RESET & VARIABLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 :root {
     --bg-primary: #0a0c14;
     --bg-secondary: #141824;
-    --glass: rgba(20, 24, 36, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    
     --blue: #2a9dff;
     --blue-glow: rgba(42, 157, 255, 0.3);
     --purple: #9d4edd;
@@ -12,50 +14,21 @@
     --green: #4caf50;
     --green-glow: rgba(76, 175, 80, 0.3);
     --orange: #ff9800;
-    --orange-glow: rgba(255, 152, 0, 0.3);
     --red: #f44336;
-    --red-glow: rgba(244, 67, 54, 0.3);
-    
     --text-primary: #ffffff;
     --text-secondary: #8f9bb3;
     --text-muted: #5a6275;
-    
-    --card-bg: rgba(20, 24, 36, 0.8);
     --border-color: rgba(255, 255, 255, 0.08);
-    
-    --transition: all 0.3s ease;
-    --border-radius: 20px;
-    --border-radius-sm: 12px;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: radial-gradient(circle at 50% 0%, #1a1f30, #0a0c14 70%);
     color: var(--text-primary);
-    min-height: 100vh;
     padding: 20px;
-    line-height: 1.5;
+    min-height: 100vh;
 }
 
-/* ===== ANIMATIONS ===== */
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-@keyframes glow {
-    0% { box-shadow: 0 0 5px var(--blue); }
-    50% { box-shadow: 0 0 20px var(--blue); }
-    100% { box-shadow: 0 0 5px var(--blue); }
-}
-
-/* ===== LAYOUT ===== */
 .app-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -72,11 +45,15 @@ header {
     align-items: center;
     flex-wrap: wrap;
     gap: 20px;
+    background: rgba(20, 24, 36, 0.8);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
 }
 
-.title-section h1 {
+h1 {
     font-size: 2.2rem;
-    font-weight: 700;
     background: linear-gradient(135deg, var(--blue), var(--purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -103,15 +80,14 @@ header {
 }
 
 .subject-selector {
-    background: var(--card-bg);
+    background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
     padding: 10px 16px;
-    border-radius: var(--border-radius-sm);
+    border-radius: 12px;
     font-size: 0.95rem;
     min-width: 200px;
     cursor: pointer;
-    backdrop-filter: blur(10px);
 }
 
 .subject-selector:hover {
@@ -119,7 +95,7 @@ header {
 }
 
 .subject-selector option {
-    background: var(--bg-secondary);
+    background: #1a1f30;
 }
 
 /* Dashboard Grid */
@@ -132,12 +108,12 @@ header {
 
 /* Glass Cards */
 .glass-card {
-    background: var(--card-bg);
+    background: rgba(20, 24, 36, 0.8);
     backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: 20px;
     padding: 20px;
-    transition: var(--transition);
+    transition: all 0.3s ease;
 }
 
 .glass-card:hover {
@@ -156,16 +132,19 @@ header {
 }
 
 /* Buttons */
-.btn-primary {
-    background: linear-gradient(135deg, var(--blue), var(--purple));
+.btn-primary, .btn-secondary, .btn-ai {
+    padding: 8px 16px;
     border: none;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 30px;
+    border-radius: 20px;
     font-weight: 600;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     font-size: 0.9rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: white;
 }
 
 .btn-primary:hover {
@@ -176,11 +155,7 @@ header {
 .btn-secondary {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: var(--transition);
+    color: white;
 }
 
 .btn-secondary:hover {
@@ -190,13 +165,7 @@ header {
 
 .btn-ai {
     background: linear-gradient(135deg, var(--purple), var(--blue));
-    border: none;
     color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: var(--transition);
-    font-weight: 500;
 }
 
 .btn-ai:hover {
@@ -209,7 +178,7 @@ header {
     background: rgba(0, 0, 0, 0.3);
     border-left: 4px solid var(--purple);
     padding: 16px;
-    border-radius: var(--border-radius-sm);
+    border-radius: 12px;
     margin-bottom: 20px;
     font-size: 0.95rem;
 }
@@ -255,7 +224,7 @@ header {
     justify-content: center;
     font-size: 40px;
     margin-bottom: 16px;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     cursor: pointer;
 }
 
@@ -272,8 +241,13 @@ header {
 
 .twin-avatar.stressed {
     background: radial-gradient(circle, var(--red), transparent);
-    box-shadow: 0 0 30px var(--red-glow);
+    box-shadow: 0 0 30px rgba(244, 67, 54, 0.3);
     animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
 }
 
 .twin-status {
@@ -346,7 +320,7 @@ header {
 .schedule-input-group select {
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
-    color: var(--text-primary);
+    color: white;
     padding: 8px;
     border-radius: 8px;
     flex: 1;
@@ -357,15 +331,6 @@ header {
 .schedule-input-group select:focus {
     outline: none;
     border-color: var(--blue);
-}
-
-.schedule-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.schedule-actions button {
-    flex: 1;
 }
 
 /* AI Tutor */
@@ -389,7 +354,7 @@ header {
     height: 150px;
     overflow-y: auto;
     background: rgba(0, 0, 0, 0.3);
-    border-radius: var(--border-radius-sm);
+    border-radius: 12px;
     padding: 12px;
     margin-bottom: 12px;
     font-size: 0.9rem;
@@ -416,7 +381,7 @@ header {
     flex: 1;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
-    color: var(--text-primary);
+    color: white;
     padding: 8px 12px;
     border-radius: 8px;
 }
@@ -441,13 +406,13 @@ header {
 }
 
 .skill-node {
-    background: var(--card-bg);
+    background: rgba(20, 24, 36, 0.8);
     border: 1px solid var(--border-color);
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.85rem;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
 }
 
 .skill-node:hover {
@@ -466,7 +431,7 @@ header {
 
 .skill-node.weak {
     border-color: var(--red);
-    box-shadow: 0 0 10px var(--red-glow);
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
 }
 
 /* Roadmap Section */
@@ -502,7 +467,7 @@ header {
     justify-content: space-around;
     padding: 16px;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: var(--border-radius-sm);
+    border-radius: 12px;
 }
 
 .stat-item {
@@ -522,10 +487,6 @@ header {
 
 .stat-number.positive {
     color: var(--green);
-}
-
-.stat-number.negative {
-    color: var(--red);
 }
 
 /* Responsive */
@@ -549,23 +510,4 @@ header {
         width: 100%;
         justify-content: space-between;
     }
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--text-muted);
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
 }
