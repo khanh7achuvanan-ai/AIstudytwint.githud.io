@@ -34,9 +34,35 @@
                         <option value="informatics">💻 Tin Học</option>
                         <option value="technology">🔧 Công Nghệ</option>
                     </select>
+                    <!-- Nút cài đặt API -->
+                    <button class="btn-icon" id="settingsBtn">⚙️</button>
                 </div>
             </div>
         </header>
+
+        <!-- MODAL CÀI ĐẶT API (ẩn) -->
+        <div class="modal" id="apiModal">
+            <div class="modal-content">
+                <h3>Cài đặt API Key</h3>
+                <p>Nhập Gemini API Key của bạn (sẽ được lưu trong trình duyệt):</p>
+                <input type="text" id="apiKeyInput" placeholder="AIzaSy..." value="">
+                <div class="modal-actions">
+                    <button class="btn-primary" id="saveApiBtn">Lưu</button>
+                    <button class="btn-secondary" id="closeModalBtn">Đóng</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- POPUP LỘ TRÌNH CẤP TỐC (ẩn) -->
+        <div class="modal" id="roadmapPopup">
+            <div class="modal-content">
+                <h3>🚀 Lộ trình cấp tốc</h3>
+                <div id="popupContent">Đang tải...</div>
+                <div class="modal-actions">
+                    <button class="btn-primary" id="closePopupBtn">Đóng</button>
+                </div>
+            </div>
+        </div>
 
         <!-- DASHBOARD GRID -->
         <div class="dashboard-grid">
@@ -60,13 +86,7 @@
                     <button class="btn-secondary" id="addScheduleBtn">➕ Thêm</button>
                     <button class="btn-ai" id="generateScheduleBtn">⚡ AI Tạo lịch</button>
                 </div>
-                <!-- Countdown cho ca học hiện tại -->
-                <div class="countdown-container" id="countdownContainer" style="display: none;">
-                    <span>📅 Ca học hiện tại: </span>
-                    <span id="currentSession">Chưa có</span>
-                    <span> - ⏳ Còn: </span>
-                    <span id="countdownTimer">00:00</span>
-                </div>
+                <!-- Countdown sẽ hiển thị trong từng item, không cần container riêng -->
             </div>
 
             <!-- Daily Insight Panel -->
@@ -179,9 +199,10 @@
         </div>
     </div>
 
-    <!-- File cấu hình (chứa API Key - không đưa lên git) -->
-    <script src="config.js"></script>
-    <!-- JavaScript chính -->
+    <!-- Âm thanh thông báo (ẩn) -->
+    <audio id="notificationSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" preload="auto"></audio>
+
+    <!-- JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
