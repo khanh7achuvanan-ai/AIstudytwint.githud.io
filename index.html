@@ -2,78 +2,191 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>AI Study Twin Dashboard</title>
+    <title>AI Study Twin Pro - Hệ Thống Học Tập Thông Minh</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="AI Study Twin - Digital Twin cho việc học tập với dự báo điểm số và lộ trình cá nhân hóa">
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-top">
+                <div class="title-section">
+                    <h1>AI Study Twin</h1>
+                    <p class="subtitle">Digital Twin Intelligence · Predictive Learning · 11 Môn Học</p>
+                </div>
+                
+                <div class="header-stats">
+                    <div class="streak-badge" id="streakBadge">🔥 0 ngày</div>
+                    <select class="subject-selector" id="subjectSelector">
+                        <option value="math">📐 Toán</option>
+                        <option value="english" selected>📘 Tiếng Anh</option>
+                        <option value="physics">⚡ Vật Lý</option>
+                        <option value="chemistry">🧪 Hóa Học</option>
+                        <option value="biology">🧬 Sinh Học</option>
+                        <option value="literature">📖 Ngữ Văn</option>
+                        <option value="history">🏛️ Lịch Sử</option>
+                        <option value="geography">🌍 Địa Lý</option>
+                        <option value="civics">🤝 GDCD</option>
+                        <option value="informatics">💻 Tin Học</option>
+                        <option value="technology">🔧 Công Nghệ</option>
+                    </select>
+                </div>
+            </div>
+        </header>
 
-<header>
-    <div class="header-top">
-        <h1>AI Study Twin</h1>
-
-        <!-- SUBJECT SWITCHER -->
-        <select id="subjectSelector">
-            <option value="math">Toán</option>
-            <option value="english">Tiếng Anh</option>
-            <option value="physics">Vật Lý</option>
-        </select>
-    </div>
-    <p class="subtitle">Predictive Learning & Digital Twin Intelligence</p>
-</header>
-
-<div class="dashboard">
-
-    <!-- LEFT PANEL -->
-    <div class="glass-panel">
-        <h2>🧠 Daily Insight</h2>
-
-        <div class="tip-box" id="dailyTip"></div>
-
-        <div class="bio-sync">
-            <span>❤️ Nhịp tim</span>
-            <b id="heartRate">72 bpm</b>
+        <!-- DASHBOARD GRID -->
+        <div class="dashboard-grid" id="dashboardGrid">
+            <!-- Sẽ được fill bởi JavaScript -->
         </div>
 
-        <div class="bio-sync">
-            <span>⚡ Tập trung</span>
-            <b id="focusLevel">85%</b>
+        <!-- KNOWLEDGE GRAPH SECTION -->
+        <div class="knowledge-graph glass-card" id="knowledgeGraph">
+            <h3 class="card-title">📊 Knowledge Graph</h3>
+            <div class="graph-container" id="graphContainer">
+                <!-- Dynamic nodes -->
+            </div>
         </div>
-    </div>
 
-    <!-- CENTER PANEL -->
-    <div class="glass-panel">
-        <h2>🤖 Digital Twin</h2>
-
-        <div class="twin-container">
-            <div class="digital-twin" id="twinAvatar">🤖</div>
-            <div class="twin-status" id="twinStatus">
-                Hệ thống đồng bộ ổn định
+        <!-- PREDICTIVE ROADMAP -->
+        <div class="roadmap-section glass-card">
+            <div class="roadmap-header">
+                <h3 class="card-title">📈 Predictive Roadmap</h3>
+                <div class="prediction-confidence" id="predictionConfidence">
+                    <span>Độ tin cậy: <span id="confidenceValue">0%</span></span>
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div class="empty-state" id="chartEmptyState">
+                <div class="empty-state-icon">📊</div>
+                <div class="empty-state-title">Chưa có dữ liệu học tập</div>
+                <div class="empty-state-desc">Bắt đầu phiên học đầu tiên để xem dự báo điểm số</div>
+                <button class="btn-primary" onclick="window.app?.startFirstSession()">Bắt đầu phiên học</button>
+            </div>
+            
+            <!-- Chart Container -->
+            <div class="chart-container" id="chartContainer" style="display: none;">
+                <canvas id="roadmapChart"></canvas>
+            </div>
+            
+            <!-- Risk Warning -->
+            <div class="risk-warning" id="riskWarning" style="display: none;">
+                ⚠️ Cảnh báo: Nguy cơ giảm điểm
+            </div>
+            
+            <!-- Chart Stats -->
+            <div class="chart-stats" id="chartStats">
+                <!-- Dynamic stats -->
             </div>
         </div>
     </div>
 
-    <!-- RIGHT PANEL -->
-    <div class="glass-panel">
-        <h2>💬 AI Tutor Lab</h2>
-
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Nhập câu hỏi...">
-            <button id="searchBtn">Scan</button>
+    <!-- Templates -->
+    <template id="dashboardTemplate">
+        <!-- AI Schedule Panel -->
+        <div class="glass-card ai-schedule" id="schedulePanel">
+            <h3 class="card-title">🤖 AI Schedule</h3>
+            <div class="schedule-empty" id="scheduleEmpty">
+                <div class="empty-state-icon">📅</div>
+                <div class="empty-state-desc">Chưa có lịch học</div>
+            </div>
+            <div class="schedule-list" id="scheduleList"></div>
+            <div class="schedule-input-group">
+                <input type="text" id="subjectInput" placeholder="Môn học..." value="Hóa Học">
+                <select id="timeSelect">
+                    <option value="07:30 - 09:00">Sáng (07:30 - 09:00)</option>
+                    <option value="09:15 - 10:45">Trưa (09:15 - 10:45)</option>
+                    <option value="13:30 - 15:00">Chiều (13:30 - 15:00)</option>
+                    <option value="15:15 - 16:45">Xế (15:15 - 16:45)</option>
+                    <option value="19:00 - 20:30">Tối (19:00 - 20:30)</option>
+                </select>
+            </div>
+            <div class="schedule-actions">
+                <button class="btn-secondary" id="addScheduleBtn">➕ Thêm</button>
+                <button class="btn-ai" id="generateScheduleBtn">⚡ AI Tạo lịch</button>
+            </div>
         </div>
 
-        <div class="tutor-chat" id="chatBox"></div>
-    </div>
+        <!-- Daily Insight Panel -->
+        <div class="glass-card daily-insight" id="insightPanel">
+            <h3 class="card-title">🧠 Daily Insight</h3>
+            <div class="insight-box" id="dailyTip">
+                Chọn môn học để xem insight
+            </div>
+            <div class="bio-metrics">
+                <div class="metric-item">
+                    <span class="metric-label">❤️ Nhịp tim</span>
+                    <span class="metric-value" id="heartRate">-- bpm</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">⚡ Tập trung</span>
+                    <span class="metric-value" id="focusLevel">--%</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">📊 Điểm TB</span>
+                    <span class="metric-value" id="currentGPA">--</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">⚠️ Burnout risk</span>
+                    <span class="metric-value" id="burnoutRisk">--%</span>
+                </div>
+            </div>
+        </div>
 
-    <!-- FULL WIDTH -->
-    <div class="glass-panel roadmap-panel">
-        <h2>📈 Predictive Roadmap</h2>
-        <canvas id="roadmapChart"></canvas>
-    </div>
+        <!-- Digital Twin Panel -->
+        <div class="glass-card digital-twin-panel" id="twinPanel">
+            <h3 class="card-title">🤖 Digital Twin</h3>
+            <div class="twin-container">
+                <div class="twin-avatar idle" id="twinAvatar">🤖</div>
+                <div class="twin-status" id="twinStatus">Đang đồng bộ...</div>
+                
+                <div class="avatar-stats" id="avatarStats">
+                    <div class="stat-badge">
+                        <div class="stat-value" id="twinLevel">Lv.1</div>
+                        <div class="stat-label">Level</div>
+                    </div>
+                    <div class="stat-badge">
+                        <div class="stat-value" id="twinXP">0/100</div>
+                        <div class="stat-label">XP</div>
+                    </div>
+                    <div class="stat-badge">
+                        <div class="stat-value" id="twinEnergy">100%</div>
+                        <div class="stat-label">Năng lượng</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-</div>
+        <!-- AI Tutor Panel -->
+        <div class="glass-card tutor-panel" id="tutorPanel">
+            <h3 class="card-title">💬 AI Tutor Lab</h3>
+            <div class="tutor-context" id="tutorContext">
+                <span class="context-badge" id="currentSubjectContext">Tiếng Anh</span>
+                <span class="context-badge" id="weakSkillContext">Từ vựng</span>
+            </div>
+            <div class="tutor-chat" id="chatBox">
+                <div class="chat-message ai-message">
+                    <b>AI:</b> Chào bạn! Mình sẵn sàng giúp đỡ môn Tiếng Anh.
+                </div>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Nhập câu hỏi...">
+                <button class="btn-primary" id="searchBtn">Gửi</button>
+            </div>
+            <div class="ai-thinking" id="aiThinking" style="display: none;">
+                <span class="thinking-ai">🤔</span> AI đang phân tích...
+            </div>
+        </div>
+    </template>
 
-<script src="script.js"></script>
+    <!-- Scripts -->
+    <script src="script.js"></script>
 </body>
 </html>
