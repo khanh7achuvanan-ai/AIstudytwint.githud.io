@@ -2,75 +2,67 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>AI Study Twin | Deep Navy Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Study Twin Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<header>
-    <div class="header-content">
-        <div class="logo">◈ STUDY TWIN <span>AI</span></div>
-        <div id="bioMetrics">
-            <span class="dot"></span> SYNCING: 88% FOCUS
-        </div>
-    </div>
-</header>
+    <header>
+        <h1>AI Study Twin</h1>
+        <p class="subtitle">Predictive Learning & Bio-Sync Active</p>
+    </header>
 
-<div class="dashboard">
-    <aside class="panel left-panel">
-        <section>
-            <h2>📅 LỊCH HỌC TẬP</h2>
-            <div id="calendar"></div>
-        </section>
-
-        <section class="wisdom-section">
-            <h2>🧠 DAILY WISDOM</h2>
-            <div class="wisdom-card">
-                <p id="dailyTip">Dữ liệu Neuroscience: Hãy thử kỹ thuật Pomodoro 50/10 để tối ưu sóng não Alpha.</p>
+    <div class="dashboard">
+        <div class="glass-panel">
+            <h2>🧠 Daily Wisdom & Flow</h2>
+            <div class="tip-box">
+                <strong>💡 Kỹ thuật hôm nay: Spaced Repetition</strong><br>
+                <span class="muted-text">Hệ thống nhận thấy bạn hay quên từ vựng sau 3 ngày. Hôm nay Twin sẽ ưu tiên ôn tập lại các thẻ Flashcard từ tuần trước.</span>
             </div>
-        </section>
-    </aside>
-
-    <main class="panel main-panel">
-        <h2>🌐 DIGITAL TWIN STATUS</h2>
-        <div class="twin-container">
-            <div class="twin-orb" id="twinOrb"></div>
-            <p id="twinStatus">SYSTEMS OPTIMAL</p>
-        </div>
-        
-        <h2>📈 DỰ BÁO TIẾN ĐỘ (PREDICTIVE)</h2>
-        <div class="chart-container">
-            <canvas id="studyChart"></canvas>
-        </div>
-    </main>
-
-    <aside class="panel right-panel">
-        <h2>🤖 AI TUTOR LAB</h2>
-        <div id="aiBox" class="chat-display">Đang chờ phân tích dữ liệu học tập của bạn...</div>
-        <div class="search-group">
-            <input type="text" id="aiSearchInput" placeholder="Hỏi AI về bài tập hoặc nghiên cứu...">
-            <button onclick="askDeepAI()">SCAN</button>
+            <div class="bio-sync">
+                <span>❤️ Nhịp tim: <b>72 bpm</b></span>
+                <span class="status-optimal">Trạng thái: Tối ưu</span>
+            </div>
+            <div class="bio-sync">
+                <span>⚡ Mức độ tập trung: <b>85%</b></span>
+                <span>🔥 Flow State</span>
+            </div>
         </div>
 
-        <h2>🧠 KNOWLEDGE GRAPH</h2>
-        <div id="knowledgeGraph"></div>
-    </aside>
-</div>
+        <div class="glass-panel">
+            <h2>🌐 The Twin (Bản sao số)</h2>
+            <div class="twin-container">
+                <div class="digital-twin" id="twinAvatar">🤖</div>
+                <div class="twin-status" id="twinStatus">Hệ thống đồng bộ: Ổn định. Sẵn sàng học tập!</div>
+            </div>
+        </div>
 
-<div id="popup" class="hidden">
-    <h3 id="selectedDate"></h3>
-    <div id="subjectContainer"></div>
-    <div class="popup-actions">
-        <button onclick="addSubject()">+ Thêm môn</button>
-        <button onclick="closePopup()" class="btn-secondary">Đóng</button>
+        <div class="glass-panel">
+            <h2>🌍 Deep Research Hub</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Nhập bài toán hoặc khái niệm...">
+                <button onclick="simulateSearch()">Scan</button>
+            </div>
+            <h2>💬 AI Tutor Lab</h2>
+            <div class="tutor-chat" id="chatBox">
+                <p><b>AI Tutor:</b> Chào bạn, tôi đã phân tích lỗi sai bài Toán hôm qua của bạn. Bạn đang nhầm lẫn ở bước đặt ẩn phụ. Cần tôi giải thích lại không?</p>
+            </div>
+        </div>
+
+        <div class="glass-panel roadmap-panel">
+            <h2>📈 Dự báo tương lai (Predictive Roadmap)</h2>
+            <div class="chart-container">
+                <canvas id="roadmapChart"></canvas>
+            </div>
+        </div>
     </div>
-</div>
 
-<script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
+
 
 
 
