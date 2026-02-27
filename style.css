@@ -655,3 +655,56 @@ h1 {
 #notificationSound {
     display: none;
 }
+/* Score detail modal */
+.score-detail-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-group label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.input-group input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+/* Targets display */
+.targets-display {
+    display: flex;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.target-item {
+    color: var(--text-secondary);
+}
+
+.target-item span {
+    color: var(--blue);
+    font-weight: 600;
+    margin-left: 5px;
+}
