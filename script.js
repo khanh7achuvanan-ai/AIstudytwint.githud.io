@@ -1,35 +1,59 @@
-// Khởi tạo Biểu đồ Dự báo (Roadmap Chart)
-function initChart() {
-    const ctx = document.getElementById('roadmapChart').getContext('2d');
-    
-    // Gradient cho đường thực tế
-    let gradientReal = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientReal.addColorStop(0, 'rgba(0, 243, 255, 0.5)');
-    gradientReal.addColorStop(1, 'rgba(0, 243, 255, 0.0)');
+let roadmapChart;
 
-    new Chart(ctx, {
+// Dữ liệu mô phỏng cho từng môn học
+const subjectData = {
+    math: {
+        label: "Toán Học",
+        badge: "Toán Giải Tích",
+        realPoints: [6.5, 7.0, 7.2, 7.8, null, null],
+        predPoints: [null, null, null, 7.8, 8.5, 9.2],
+        tipTitle: "💡 Kỹ thuật: Spaced Repetition",
+        tipDesc: "Bạn thường quên công thức Logarit sau 3 ngày. Hãy ôn lại ngay!"
+    },
+    physics: {
+        label: "Vật Lý",
+        badge: "Điện Xoay Chiều",
+        realPoints: [5.0, 5.5, 6.5, 6.8, null, null],
+        predPoints: [null, null, null, 6.8, 7.5, 8.0],
+        tipTitle: "💡 Kỹ thuật: Feynman",
+        tipDesc: "Hãy thử giải thích định luật Ohm cho 'Twin' của bạn bằng ngôn ngữ đơn giản."
+    },
+    english: {
+        label: "Tiếng Anh",
+        badge: "IELTS Reading",
+        realPoints: [7.5, 7.5, 8.0, 8.5, null, null],
+        predPoints: [null, null, null, 8.5, 8.8, 9.0],
+        tipTitle: "💡 Kỹ thuật: Skimming",
+        tipDesc: "Kỹ năng đọc lướt của bạn đang cải thiện. Tập trung vào từ khóa (Keywords)."
+    }
+};
+
+// Khởi tạo biểu đồ
+function initChart(subjectKey) {
+    const ctx = document.getElementById('roadmapChart').getContext('2d');
+    const data = subjectData[subjectKey];
+
+    if (roadmapChart) roadmapChart.destroy(); // Hủy biểu đồ cũ nếu có
+
+    roadmapChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4 (Hiện tại)', 'Tuần 5 (Dự báo)', 'Tuần 6 (Dự báo)'],
+            labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4 (Nay)', 'Tuần 5 (Dự báo)', 'Tuần 6 (Dự báo)'],
             datasets: [
                 {
-                    label: 'Điểm số thực tế',
-                    data: [6.5, 7.0, 7.2, 7.8, null, null],
+                    label: 'Điểm thực thực tế',
+                    data: data.realPoints,
                     borderColor: '#00f3ff',
-                    backgroundColor: gradientReal,
-                    borderWidth: 2,
+                    backgroundColor: 'rgba(0, 243, 255, 0.1)',
                     fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#00f3ff'
+                    tension: 0.4
                 },
                 {
-                    label: 'Điểm số dự báo (Dựa trên thói quen hiện tại)',
-                    data: [null, null, null, 7.8, 8.5, 9.2],
+                    label: 'Dự báo xu hướng',
+                    data: data.predPoints,
                     borderColor: '#bc13fe',
-                    borderDash: [5, 5], // Đường nét đứt thể hiện sự dự báo
-                    borderWidth: 2,
-                    tension: 0.4,
-                    pointBackgroundColor: '#bc13fe'
+                    borderDash: [5, 5],
+                    tension: 0.4
                 }
             ]
         },
@@ -37,69 +61,52 @@ function initChart() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { labels: { color: '#e2e8f0' } },
-                tooltip: { mode: 'index', intersect: false }
+                legend: { labels: { color: '#f1f5f9', font: { family: 'Inter' } } }
             },
             scales: {
-                x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 0, max: 10 }
-            },
-            interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                y: { min: 0, max: 10, ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                x: { ticks: { color: '#64748b' }, grid: { display: false } }
+            }
         }
     });
 }
 
-// Hàm mô phỏng AI Deep Search
-function simulateSearch() {
-    const inputField = document.getElementById('searchInput');
-    const input = inputField.value.trim();
+// Hàm cập nhật toàn bộ Dashboard khi chọn môn học
+function updateSubject() {
+    const key = document.getElementById('subjectSelect').value;
+    const data = subjectData[key];
+
+    // Cập nhật text
+    document.getElementById('wisdomBadge').innerText = `Môn: ${data.label}`;
+    document.getElementById('chartLabel').innerText = `Dữ liệu: ${data.label}`;
+    document.getElementById('tipTitle').innerText = data.tipTitle;
+    document.getElementById('tipDesc').innerText = data.tipDesc;
+    document.getElementById('tutorSub').innerText = `(${data.label})`;
+    
+    // Cập nhật biểu đồ
+    initChart(key);
+
+    // Hiệu ứng thông báo từ AI
     const chatBox = document.getElementById('chatBox');
-    
-    if(!input) return;
-
-    // Hiển thị câu hỏi của user
-    chatBox.innerHTML += `<p style="color: var(--neon-blue);"><b>Bạn:</b> ${input}</p>`;
-    chatBox.innerHTML += `<p id="loadingMsg"><b>System:</b> <i>Đang quét WolframAlpha & Chegg...</i></p>`;
-    
-    // Tự động cuộn xuống cuối cùng
-    chatBox.scrollTop = chatBox.scrollHeight;
-    inputField.value = '';
-
-    // Mô phỏng độ trễ (delay) khi AI đang "suy nghĩ"
-    setTimeout(() => {
-        document.getElementById('loadingMsg').remove();
-        chatBox.innerHTML += `<p><b>AI Tutor:</b> Dựa trên dữ liệu toàn cầu, cách giải tối ưu nhất cho "${input}" là sử dụng phương pháp chia nhỏ vấn đề (First Principles). Đây là các bước chi tiết...</p>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 1500);
+    chatBox.innerHTML = `<p><b>AI Tutor:</b> Đã chuyển dữ liệu sang môn <b>${data.label}</b>. Tôi đang tải các bài tập phù hợp...</p>`;
 }
 
-// Lắng nghe sự kiện Enter trong ô tìm kiếm
-document.getElementById('searchInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        simulateSearch();
-    }
-});
+// Giữ lại các hàm cũ nhưng tối ưu hơn
+function simulateSearch() {
+    const input = document.getElementById('searchInput').value;
+    const chatBox = document.getElementById('chatBox');
+    if(!input) return;
 
-// Sự kiện tương tác với Twin Avatar (Mô phỏng Bio-Sync)
-document.getElementById('twinAvatar').addEventListener('click', function() {
-    const statusText = document.getElementById('twinStatus');
-    
-    // Chuyển sang trạng thái cảnh báo (Cam)
-    this.style.background = 'radial-gradient(circle, var(--neon-orange) 0%, transparent 70%)';
-    this.style.boxShadow = '0 0 50px var(--neon-orange)';
-    statusText.innerText = 'Phát hiện căng thẳng. Đề xuất bài tập thở 2 phút!';
-    statusText.style.color = 'var(--neon-orange)';
-    
-    // Tự động hồi phục sau 4 giây (Trở về Xanh)
+    chatBox.innerHTML += `<p style="color: var(--neon-blue);"><b>Bạn:</b> ${input}</p>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
     setTimeout(() => {
-        this.style.background = 'radial-gradient(circle, var(--neon-blue) 0%, transparent 70%)';
-        this.style.boxShadow = '0 0 50px var(--neon-blue)';
-        statusText.innerText = 'Hệ thống đồng bộ: Ổn định. Sẵn sàng học tập!';
-        statusText.style.color = 'var(--neon-blue)';
-    }, 4000);
-});
+        chatBox.innerHTML += `<p><b>AI Tutor:</b> Đang phân tích "${input}" trong cơ sở dữ liệu... Đã tìm thấy 3 phương pháp giải nhanh!</p>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 1000);
+}
 
-// Chạy khởi tạo biểu đồ khi trang web load xong
+// Init lần đầu
 window.onload = () => {
-    initChart();
+    initChart('math');
 };
