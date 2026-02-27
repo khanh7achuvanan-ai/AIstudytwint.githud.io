@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>AI Study Twin - Hệ Thống Học Tập Thông Minh</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -32,17 +34,18 @@
                         <option value="informatics">💻 Tin Học</option>
                         <option value="technology">🔧 Công Nghệ</option>
                     </select>
+                    <!-- Nút cài đặt API -->
                     <button class="btn-icon" id="settingsBtn">⚙️</button>
                 </div>
             </div>
         </header>
 
-        <!-- MODAL CÀI ĐẶT API -->
+        <!-- MODAL CÀI ĐẶT API (ẩn) -->
         <div class="modal" id="apiModal">
             <div class="modal-content">
                 <h3>Cài đặt API Key</h3>
-                <p>Nhập Gemini API Key (lưu trong trình duyệt):</p>
-                <input type="text" id="apiKeyInput" placeholder="AIzaSy...">
+                <p>Nhập Gemini API Key của bạn (sẽ được lưu trong trình duyệt):</p>
+                <input type="text" id="apiKeyInput" placeholder="AIzaSy..." value="">
                 <div class="modal-actions">
                     <button class="btn-primary" id="saveApiBtn">Lưu</button>
                     <button class="btn-secondary" id="closeModalBtn">Đóng</button>
@@ -50,44 +53,7 @@
             </div>
         </div>
 
-        <!-- MODAL NHẬP ĐIỂM CHI TIẾT -->
-        <div class="modal" id="scoreModal">
-            <div class="modal-content">
-                <h3 id="modalSubjectTitle">Nhập điểm môn Toán</h3>
-                <div class="score-detail-inputs">
-                    <div class="input-group">
-                        <label>Điểm thường xuyên (hệ số 1):</label>
-                        <input type="number" id="dailyScore" step="0.1" min="0" max="10" placeholder="VD: 8.5">
-                    </div>
-                    <div class="input-group">
-                        <label>Điểm giữa kỳ (hệ số 2):</label>
-                        <input type="number" id="midtermScore" step="0.1" min="0" max="10" placeholder="VD: 7.5">
-                    </div>
-                    <div class="input-group">
-                        <label>Điểm cuối kỳ (hệ số 3):</label>
-                        <input type="number" id="finalScore" step="0.1" min="0" max="10" placeholder="VD: 8.0">
-                    </div>
-                    <div class="input-group">
-                        <label>Mục tiêu HK1:</label>
-                        <input type="number" id="targetHK1" step="0.1" min="0" max="10" placeholder="VD: 8.5">
-                    </div>
-                    <div class="input-group">
-                        <label>Mục tiêu HK2:</label>
-                        <input type="number" id="targetHK2" step="0.1" min="0" max="10" placeholder="VD: 9.0">
-                    </div>
-                    <div class="input-group">
-                        <label>Mục tiêu cả năm:</label>
-                        <input type="number" id="targetYear" step="0.1" min="0" max="10" placeholder="VD: 8.8">
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-primary" id="saveScoreBtn">Lưu điểm</button>
-                    <button class="btn-secondary" id="closeScoreModalBtn">Đóng</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- POPUP LỘ TRÌNH -->
+        <!-- POPUP LỘ TRÌNH CẤP TỐC (ẩn) -->
         <div class="modal" id="roadmapPopup">
             <div class="modal-content">
                 <h3>🚀 Lộ trình cấp tốc</h3>
@@ -103,7 +69,9 @@
             <!-- AI Schedule Panel -->
             <div class="glass-card schedule-panel">
                 <h3 class="card-title">🤖 AI Schedule</h3>
-                <div class="schedule-list" id="scheduleList" ondragover="event.preventDefault()" ondrop="App.handleDrop(event)"></div>
+                <div class="schedule-list" id="scheduleList" ondragover="event.preventDefault()" ondrop="App.handleDrop(event)">
+                    <!-- Các môn học sẽ được render bằng JS -->
+                </div>
                 <div class="schedule-input-group">
                     <input type="text" id="subjectInput" placeholder="Môn học..." value="Hóa Học">
                     <select id="timeSelect">
@@ -123,15 +91,27 @@
             <!-- Daily Insight Panel -->
             <div class="glass-card">
                 <h3 class="card-title">🧠 Daily Insight</h3>
-                <div class="insight-box" id="dailyTip">Chọn môn học để xem insight</div>
-                <div class="bio-metrics">
-                    <div class="metric-item"><span class="metric-label">❤️ Nhịp tim</span><span class="metric-value" id="heartRate">72 bpm</span></div>
-                    <div class="metric-item"><span class="metric-label">⚡ Tập trung</span><span class="metric-value" id="focusLevel">85%</span></div>
-                    <div class="metric-item"><span class="metric-label">📊 Điểm TB</span><span class="metric-value" id="currentGPA">8.1</span></div>
-                    <div class="metric-item"><span class="metric-label">⚠️ Burnout risk</span><span class="metric-value" id="burnoutRisk">12%</span></div>
+                <div class="insight-box" id="dailyTip">
+                    Chọn môn học để xem insight
                 </div>
-                <!-- Nút nhập điểm chi tiết -->
-                <button class="btn-primary" id="openScoreModalBtn" style="width:100%; margin-top:10px;">✏️ Nhập điểm chi tiết</button>
+                <div class="bio-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">❤️ Nhịp tim</span>
+                        <span class="metric-value" id="heartRate">72 bpm</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">⚡ Tập trung</span>
+                        <span class="metric-value" id="focusLevel">85%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">📊 Điểm TB</span>
+                        <span class="metric-value" id="currentGPA">8.1</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">⚠️ Burnout risk</span>
+                        <span class="metric-value" id="burnoutRisk">12%</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Digital Twin Panel -->
@@ -141,9 +121,18 @@
                     <div class="twin-avatar idle" id="twinAvatar">🤖</div>
                     <div class="twin-status" id="twinStatus">Hệ thống đồng bộ ổn định</div>
                     <div class="avatar-stats">
-                        <div class="stat-badge"><div class="stat-value" id="twinLevel">Lv.1</div><div class="stat-label">Level</div></div>
-                        <div class="stat-badge"><div class="stat-value" id="twinXP">0/100</div><div class="stat-label">XP</div></div>
-                        <div class="stat-badge"><div class="stat-value" id="twinEnergy">100%</div><div class="stat-label">Năng lượng</div></div>
+                        <div class="stat-badge">
+                            <div class="stat-value" id="twinLevel">Lv.1</div>
+                            <div class="stat-label">Level</div>
+                        </div>
+                        <div class="stat-badge">
+                            <div class="stat-value" id="twinXP">0/100</div>
+                            <div class="stat-label">XP</div>
+                        </div>
+                        <div class="stat-badge">
+                            <div class="stat-value" id="twinEnergy">100%</div>
+                            <div class="stat-label">Năng lượng</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -156,7 +145,9 @@
                     <span class="context-badge" id="weakSkillContext">Từ vựng</span>
                 </div>
                 <div class="tutor-chat" id="chatBox">
-                    <div class="chat-message ai-message"><b>AI:</b> Chào bạn! Mình có thể giúp gì?</div>
+                    <div class="chat-message ai-message">
+                        <b>AI:</b> Chào bạn! Mình có thể giúp gì cho việc học hôm nay?
+                    </div>
                 </div>
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Nhập câu hỏi...">
@@ -175,16 +166,12 @@
         <div class="roadmap-section glass-card">
             <div class="roadmap-header">
                 <h3 class="card-title">📈 Predictive Roadmap</h3>
-                <div class="prediction-confidence">Độ tin cậy: <span id="confidenceValue">78%</span></div>
+                <div class="prediction-confidence">
+                    Độ tin cậy: <span id="confidenceValue">78%</span>
+                </div>
             </div>
             
-            <!-- Hiển thị mục tiêu -->
-            <div class="targets-display">
-                <div class="target-item">🎯 HK1: <span id="targetHK1Display">--</span></div>
-                <div class="target-item">🎯 HK2: <span id="targetHK2Display">--</span></div>
-                <div class="target-item">🎯 Cả năm: <span id="targetYearDisplay">--</span></div>
-            </div>
-
+            <!-- Nhập điểm mới -->
             <div class="score-input-group">
                 <input type="number" id="newScoreInput" placeholder="Nhập điểm mới (0-10)" step="0.1" min="0" max="10">
                 <button class="btn-primary" id="updateScoreBtn">Cập nhật điểm</button>
@@ -195,14 +182,26 @@
             </div>
             
             <div class="chart-stats" id="chartStats">
-                <div class="stat-item"><div class="stat-label">Thực tế</div><div class="stat-number positive" id="statReal">8.1</div></div>
-                <div class="stat-item"><div class="stat-label">Dự báo 1</div><div class="stat-number" id="statPred1">8.5</div></div>
-                <div class="stat-item"><div class="stat-label">Dự báo 2</div><div class="stat-number" id="statPred2">8.9</div></div>
+                <div class="stat-item">
+                    <div class="stat-label">Thực tế</div>
+                    <div class="stat-number positive" id="statReal">8.1</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Dự báo 1</div>
+                    <div class="stat-number" id="statPred1">8.5</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Dự báo 2</div>
+                    <div class="stat-number" id="statPred2">8.9</div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Âm thanh thông báo (ẩn) -->
     <audio id="notificationSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" preload="auto"></audio>
+
+    <!-- JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
