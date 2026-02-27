@@ -376,6 +376,69 @@ h1 {
     display: flex;
     gap: 8px;
 }
+/* Countdown */
+.countdown-container {
+    margin-top: 12px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--blue);
+    text-align: center;
+}
+
+/* Schedule item cho phép kéo thả */
+.schedule-item {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    border-left: 3px solid var(--green);
+    cursor: grab;
+    transition: all 0.2s;
+}
+
+.schedule-item:active {
+    cursor: grabbing;
+    opacity: 0.7;
+}
+
+.schedule-item.dragging {
+    opacity: 0.5;
+}
+
+/* Input điểm */
+.score-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.score-input-group input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+/* Nút xóa môn học (thêm vào schedule-item) */
+.delete-schedule {
+    margin-left: 8px;
+    color: var(--red);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Responsive cho input group */
+@media (max-width: 768px) {
+    .score-input-group {
+        flex-direction: column;
+    }
+}
 
 .search-box input {
     flex: 1;
@@ -511,3 +574,4 @@ h1 {
         justify-content: space-between;
     }
 }
+
