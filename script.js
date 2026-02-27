@@ -1,20 +1,19 @@
-// ===== APP MODULE =====
+// App Module - Tất cả chức năng chính
 const App = (function() {
     // Private variables
     let chart = null;
     let currentSubject = 'english';
-    let twinState = 'idle';
     let xp = 0;
     let level = 1;
     
-    // Subject data
+    // Dữ liệu cho 11 môn học
     const subjectData = {
         math: {
             name: 'Toán',
             icon: '📐',
             real: [6.5, 7.0, 7.2, 7.8],
             predicted: [7.8, 8.2, 8.5],
-            weaknesses: ['Hình học', 'Tích phân', 'Số phức'],
+            weaknesses: ['Hình học không gian', 'Tích phân', 'Số phức'],
             tip: '🔢 Ôn lại chuyên đề Vector. Cần luyện thêm bài tập nâng cao.'
         },
         english: {
@@ -22,7 +21,7 @@ const App = (function() {
             icon: '📘',
             real: [7.0, 7.3, 7.8, 8.1],
             predicted: [8.1, 8.5, 8.9],
-            weaknesses: ['Từ vựng', 'Phrasal verbs', 'Writing'],
+            weaknesses: ['Từ vựng', 'Phrasal verbs', 'IELTS Writing'],
             tip: '📘 Bạn hay quên từ vựng sau 3 ngày. Hệ thống kích hoạt Spaced Repetition.'
         },
         physics: {
@@ -30,7 +29,7 @@ const App = (function() {
             icon: '⚡',
             real: [6.0, 6.8, 7.5, 7.9],
             predicted: [7.9, 8.1, 8.3],
-            weaknesses: ['Điện từ', 'Lượng tử', 'Dao động'],
+            weaknesses: ['Điện từ', 'Lượng tử ánh sáng', 'Dao động'],
             tip: '⚡ Sai số trong bài động lượng đang tăng. Cần luyện thêm.'
         },
         chemistry: {
@@ -46,7 +45,7 @@ const App = (function() {
             icon: '🧬',
             real: [7.5, 7.8, 8.0, 8.2],
             predicted: [8.2, 8.4, 8.6],
-            weaknesses: ['Tế bào', 'Di truyền'],
+            weaknesses: ['Cấu trúc tế bào', 'Di truyền học'],
             tip: '🧬 Cần ôn lại cấu trúc tế bào.'
         },
         literature: {
@@ -54,7 +53,7 @@ const App = (function() {
             icon: '📖',
             real: [7.0, 7.3, 7.6, 7.8],
             predicted: [7.8, 8.0, 8.2],
-            weaknesses: ['Nghị luận', 'Phân tích thơ'],
+            weaknesses: ['Nghị luận xã hội', 'Phân tích thơ'],
             tip: '📖 Phân tích tác phẩm còn sơ sài.'
         },
         history: {
@@ -62,7 +61,7 @@ const App = (function() {
             icon: '🏛️',
             real: [7.8, 8.0, 8.2, 8.5],
             predicted: [8.5, 8.7, 8.9],
-            weaknesses: ['Mốc thời gian', 'Sự kiện'],
+            weaknesses: ['Mốc thời gian', 'Sự kiện thế giới'],
             tip: '🏛️ Hay nhầm mốc thời gian. Kích hoạt ghi nhớ timeline.'
         },
         geography: {
@@ -70,7 +69,7 @@ const App = (function() {
             icon: '🌍',
             real: [7.4, 7.7, 8.0, 8.3],
             predicted: [8.3, 8.5, 8.7],
-            weaknesses: ['Bản đồ', 'Kinh tế'],
+            weaknesses: ['Bản đồ', 'Kinh tế vùng'],
             tip: '🌍 Bản đồ các vùng kinh tế còn lúng túng.'
         },
         civics: {
@@ -78,7 +77,7 @@ const App = (function() {
             icon: '🤝',
             real: [8.0, 8.2, 8.4, 8.6],
             predicted: [8.6, 8.8, 9.0],
-            weaknesses: ['Pháp luật', 'Đạo đức'],
+            weaknesses: ['Pháp luật', 'Đạo đức kinh doanh'],
             tip: '🤝 Cần liên hệ thực tế nhiều hơn.'
         },
         informatics: {
@@ -94,17 +93,19 @@ const App = (function() {
             icon: '🔧',
             real: [7.3, 7.6, 7.9, 8.2],
             predicted: [8.2, 8.4, 8.6],
-            weaknesses: ['Bản vẽ', 'Vật liệu'],
+            weaknesses: ['Bản vẽ kỹ thuật', 'Vật liệu cơ khí'],
             tip: '🔧 Bản vẽ kỹ thuật chưa chính xác.'
         }
     };
 
-    // Initialize chart
+    // Khởi tạo chart
     function initChart(subject) {
         const ctx = document.getElementById('roadmapChart');
         if (!ctx) return;
         
-        if (chart) chart.destroy();
+        if (chart) {
+            chart.destroy();
+        }
         
         const data = subjectData[subject];
         if (!data) return;
@@ -166,23 +167,27 @@ const App = (function() {
         });
         
         // Update stats
-        updateStats(data);
-    }
-    
-    // Update stats
-    function updateStats(data) {
-        document.getElementById('statReal').textContent = data.real[data.real.length - 1].toFixed(1);
-        document.getElementById('statPred').textContent = data.predicted[data.predicted.length - 1].toFixed(1);
-        document.getElementById('statGoal').textContent = (data.predicted[data.predicted.length - 1] + 0.3).toFixed(1);
-        document.getElementById('currentGPA').textContent = data.real[data.real.length - 1].toFixed(1);
+        const statReal = document.getElementById('statReal');
+        const statPred = document.getElementById('statPred');
+        const statGoal = document.getElementById('statGoal');
+        const currentGPA = document.getElementById('currentGPA');
+        
+        if (statReal) statReal.textContent = data.real[data.real.length - 1].toFixed(1);
+        if (statPred) statPred.textContent = data.predicted[data.predicted.length - 1].toFixed(1);
+        if (statGoal) statGoal.textContent = (data.predicted[data.predicted.length - 1] + 0.3).toFixed(1);
+        if (currentGPA) currentGPA.textContent = data.real[data.real.length - 1].toFixed(1);
     }
     
     // Update insight
     function updateInsight(subject) {
         const data = subjectData[subject];
-        document.getElementById('dailyTip').textContent = data.tip;
-        document.getElementById('currentSubjectContext').textContent = data.name;
-        document.getElementById('weakSkillContext').textContent = data.weaknesses[0];
+        const dailyTip = document.getElementById('dailyTip');
+        const currentSubjectContext = document.getElementById('currentSubjectContext');
+        const weakSkillContext = document.getElementById('weakSkillContext');
+        
+        if (dailyTip) dailyTip.textContent = data.tip;
+        if (currentSubjectContext) currentSubjectContext.textContent = data.name;
+        if (weakSkillContext) weakSkillContext.textContent = data.weaknesses[0];
     }
     
     // Update knowledge graph
@@ -191,11 +196,10 @@ const App = (function() {
         if (!container) return;
         
         const data = subjectData[subject];
-        const weaknesses = data.weaknesses;
         
         container.innerHTML = '';
         
-        // Add mastered skills (giả định)
+        // Mastered skills
         const mastered = ['Kiến thức cơ bản', 'Lý thuyết nền'];
         mastered.forEach(skill => {
             const node = document.createElement('span');
@@ -204,7 +208,7 @@ const App = (function() {
             container.appendChild(node);
         });
         
-        // Add improving skills
+        // Improving skills
         const improving = ['Bài tập vận dụng'];
         improving.forEach(skill => {
             const node = document.createElement('span');
@@ -213,37 +217,24 @@ const App = (function() {
             container.appendChild(node);
         });
         
-        // Add weak skills
-        weaknesses.forEach(skill => {
+        // Weak skills
+        data.weaknesses.forEach(skill => {
             const node = document.createElement('span');
             node.className = 'skill-node weak';
             node.textContent = `⚠️ ${skill}`;
             node.onclick = () => {
-                document.getElementById('searchInput').value = `Học ${skill} như thế nào?`;
-                document.getElementById('searchBtn').click();
+                const searchInput = document.getElementById('searchInput');
+                const searchBtn = document.getElementById('searchBtn');
+                if (searchInput && searchBtn) {
+                    searchInput.value = `Làm thế nào để học ${skill}?`;
+                    searchBtn.click();
+                }
             };
             container.appendChild(node);
         });
     }
     
-    // Update twin state
-    function updateTwinState(state) {
-        const avatar = document.getElementById('twinAvatar');
-        const status = document.getElementById('twinStatus');
-        
-        avatar.className = `twin-avatar ${state}`;
-        
-        const states = {
-            idle: { text: 'Hệ thống đồng bộ ổn định' },
-            learning: { text: 'Đang học - Tập trung cao độ' },
-            stressed: { text: 'Phát hiện stress - Đề xuất nghỉ ngơi' },
-            improving: { text: 'Đang cải thiện - Rất tốt!' }
-        };
-        
-        status.textContent = states[state]?.text || states.idle.text;
-    }
-    
-    // Add XP
+    // Thêm XP
     function addXP(amount) {
         xp += amount;
         const xpNeeded = level * 100;
@@ -251,44 +242,109 @@ const App = (function() {
         if (xp >= xpNeeded) {
             level++;
             xp = xp - xpNeeded;
+            const twinLevel = document.getElementById('twinLevel');
+            if (twinLevel) twinLevel.textContent = `Lv.${level}`;
         }
         
-        document.getElementById('twinXP').textContent = `${xp}/${level * 100}`;
-        document.getElementById('twinLevel').textContent = `Lv.${level}`;
+        const twinXP = document.getElementById('twinXP');
+        if (twinXP) twinXP.textContent = `${xp}/${level * 100}`;
     }
     
-    // Initialize event listeners
-    function initEventListeners() {
-        // Subject selector
-        const selector = document.getElementById('subjectSelector');
-        if (selector) {
-            selector.addEventListener('change', (e) => {
-                currentSubject = e.target.value;
-                initChart(currentSubject);
-                updateInsight(currentSubject);
-                updateKnowledgeGraph(currentSubject);
-                addXP(5); // Thêm XP khi đổi môn
-            });
+    // Handle twin click
+    function handleTwinClick() {
+        const avatar = document.getElementById('twinAvatar');
+        const status = document.getElementById('twinStatus');
+        
+        if (avatar && status) {
+            avatar.className = 'twin-avatar stressed';
+            status.textContent = '⚠️ Phát hiện stress - Đề xuất nghỉ 2 phút';
+            
+            setTimeout(() => {
+                avatar.className = 'twin-avatar idle';
+                status.textContent = 'Hệ thống đồng bộ ổn định';
+                addXP(10);
+            }, 2000);
         }
+    }
+    
+    // Public methods
+    return {
+        // Khởi tạo app
+        init: function() {
+            console.log('App initializing...');
+            
+            // Đợi DOM load xong
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => this.setup());
+            } else {
+                this.setup();
+            }
+        },
         
-        // Search button
-        const searchBtn = document.getElementById('searchBtn');
-        const searchInput = document.getElementById('searchInput');
-        
-        if (searchBtn && searchInput) {
-            searchBtn.addEventListener('click', () => {
-                const question = searchInput.value.trim();
-                if (!question) return;
+        // Setup tất cả
+        setup: function() {
+            console.log('Setting up app...');
+            
+            // Khởi tạo chart với mặc định
+            initChart(currentSubject);
+            updateInsight(currentSubject);
+            updateKnowledgeGraph(currentSubject);
+            
+            // Subject selector
+            const selector = document.getElementById('subjectSelector');
+            if (selector) {
+                selector.addEventListener('change', (e) => {
+                    currentSubject = e.target.value;
+                    initChart(currentSubject);
+                    updateInsight(currentSubject);
+                    updateKnowledgeGraph(currentSubject);
+                    addXP(5);
+                });
+            }
+            
+            // Search button
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+            
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => {
+                    const question = searchInput.value.trim();
+                    if (!question) return;
+                    
+                    const chatBox = document.getElementById('chatBox');
+                    const data = subjectData[currentSubject];
+                    
+                    if (chatBox) {
+                        chatBox.innerHTML += `<div class="chat-message"><b>🧑 Bạn:</b> ${question}</div>`;
+                        
+                        // AI response
+                        setTimeout(() => {
+                            let response = '';
+                            if (question.toLowerCase().includes('từ vựng')) {
+                                response = `📘 Về từ vựng, bạn nên học theo chủ đề. Môn ${data.name} đang yếu nhất ở: ${data.weaknesses.join(', ')}.`;
+                            } else if (question.toLowerCase().includes('công thức')) {
+                                response = `📐 Công thức quan trọng của môn ${data.name} cần nhớ: Hãy học theo sơ đồ tư duy.`;
+                            } else {
+                                response = `🤖 Dựa trên dữ liệu học tập, tôi đề xuất bạn tập trung vào "${data.weaknesses[0]}" trước. Bạn muốn tôi giải thích chi tiết không?`;
+                            }
+                            
+                            chatBox.innerHTML += `<div class="chat-message ai-message"><b>AI:</b> ${response}</div>`;
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                            
+                            // Thêm XP khi tương tác
+                            addXP(2);
+                        }, 500);
+                        
+                        searchInput.value = '';
+                    }
+                });
                 
-                const chatBox = document.getElementById('chatBox');
-                const subject = subjectData[currentSubject];
-                
-                chatBox.innerHTML += `<div class="chat-message"><b>🧑 Bạn:</b> ${question}</div>`;
-                
-                // AI response
-                setTimeout(() => {
-                    let response = '';
-                    if (question.toLowerCase().includes('từ vựng')) {
-                        response = `📘 Về từ vựng Tiếng Anh, bạn nên học theo chủ đề và sử dụng spaced repetition. Môn ${subject.name} hiện tại đang yếu nhất ở: ${subject.weaknesses.join(', ')}.`;
-                    } else {
-                        response = `🤖 Phân tích lỗi sai và đề xuất phương pháp First Principles... Môn ${subject.name} cần
+                // Enter key
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        searchBtn.click();
+                    }
+                });
+            }
+            
+            //
