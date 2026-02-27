@@ -1,34 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Study Planner AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Study Twin Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h1>🔥 Study Planner AI</h1>
+    <header>
+        <h1>AI Study Twin</h1>
+        <p class="subtitle">Predictive Learning & Bio-Sync Active</p>
+    </header>
 
-<div id="calendar"></div>
+    <div class="dashboard">
+        <div class="glass-panel">
+            <h2>🧠 Daily Wisdom & Flow</h2>
+            <div class="tip-box">
+                <strong>💡 Kỹ thuật hôm nay: Spaced Repetition</strong><br>
+                <span class="muted-text">Hệ thống nhận thấy bạn hay quên từ vựng sau 3 ngày. Hôm nay Twin sẽ ưu tiên ôn tập lại các thẻ Flashcard từ tuần trước.</span>
+            </div>
+            <div class="bio-sync">
+                <span>❤️ Nhịp tim: <b>72 bpm</b></span>
+                <span class="status-optimal">Trạng thái: Tối ưu</span>
+            </div>
+            <div class="bio-sync">
+                <span>⚡ Mức độ tập trung: <b>85%</b></span>
+                <span>🔥 Flow State</span>
+            </div>
+        </div>
 
-<div id="popup" class="hidden">
-    <h3 id="selectedDate"></h3>
-    <div id="subjectContainer"></div>
-    <button onclick="addSubject()">+ Thêm môn</button>
-    <button onclick="closePopup()">Đóng</button>
-</div>
+        <div class="glass-panel">
+            <h2>🌐 The Twin (Bản sao số)</h2>
+            <div class="twin-container">
+                <div class="digital-twin" id="twinAvatar">🤖</div>
+                <div class="twin-status" id="twinStatus">Hệ thống đồng bộ: Ổn định. Sẵn sàng học tập!</div>
+            </div>
+        </div>
 
-<h2>📈 Thống kê học tập</h2>
-<canvas id="studyChart"></canvas>
+        <div class="glass-panel">
+            <h2>🌍 Deep Research Hub</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Nhập bài toán hoặc khái niệm...">
+                <button onclick="simulateSearch()">Scan</button>
+            </div>
+            <h2>💬 AI Tutor Lab</h2>
+            <div class="tutor-chat" id="chatBox">
+                <p><b>AI Tutor:</b> Chào bạn, tôi đã phân tích lỗi sai bài Toán hôm qua của bạn. Bạn đang nhầm lẫn ở bước đặt ẩn phụ. Cần tôi giải thích lại không?</p>
+            </div>
+        </div>
 
-<h2>🤖 AI Phân tích</h2>
-<div id="aiBox"></div>
+        <div class="glass-panel roadmap-panel">
+            <h2>📈 Dự báo tương lai (Predictive Roadmap)</h2>
+            <div class="chart-container">
+                <canvas id="roadmapChart"></canvas>
+            </div>
+        </div>
+    </div>
 
-<h2>🧠 Knowledge Graph</h2>
-<div id="knowledgeGraph"></div>
-
-<script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
+
 
