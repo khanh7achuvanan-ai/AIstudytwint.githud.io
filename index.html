@@ -1,187 +1,208 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>AI Study Twin - Hệ Thống Học Tập Thông Minh</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>AI Study Twin - Hệ Thống Học Tập Thông Minh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <div class="header-top">
-                <div>
-                    <h1>AI Study Twin</h1>
-                    <p class="subtitle">Digital Twin Intelligence · Predictive Learning · 11 Môn Học</p>
-                </div>
-                
-                <div class="header-stats">
-                    <div class="streak-badge" id="streakBadge">🔥 0 ngày</div>
-                    <select class="subject-selector" id="subjectSelector">
-                        <option value="math">📐 Toán</option>
-                        <option value="english" selected>📘 Tiếng Anh</option>
-                        <option value="physics">⚡ Vật Lý</option>
-                        <option value="chemistry">🧪 Hóa Học</option>
-                        <option value="biology">🧬 Sinh Học</option>
-                        <option value="literature">📖 Ngữ Văn</option>
-                        <option value="history">🏛️ Lịch Sử</option>
-                        <option value="geography">🌍 Địa Lý</option>
-                        <option value="civics">🤝 GDCD</option>
-                        <option value="informatics">💻 Tin Học</option>
-                        <option value="technology">🔧 Công Nghệ</option>
-                    </select>
-                    <button class="btn-icon" id="settingsBtn">⚙️</button>
-                </div>
-            </div>
-        </header>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-top">
+                <div>
+                    <h1>AI Study Twin</h1>
+                    <p class="subtitle">Digital Twin Intelligence · Predictive Learning · 11 Môn Học</p>
+                </div>
+                
+                <div class="header-stats">
+                    <div class="streak-badge" id="streakBadge">🔥 0 ngày</div>
+                    <select class="subject-selector" id="subjectSelector">
+                        <option value="math">📐 Toán</option>
+                        <option value="english" selected>📘 Tiếng Anh</option>
+                        <option value="physics">⚡ Vật Lý</option>
+                        <option value="chemistry">🧪 Hóa Học</option>
+                        <option value="biology">🧬 Sinh Học</option>
+                        <option value="literature">📖 Ngữ Văn</option>
+                        <option value="history">🏛️ Lịch Sử</option>
+                        <option value="geography">🌍 Địa Lý</option>
+                        <option value="civics">🤝 GDCD</option>
+                        <option value="informatics">💻 Tin Học</option>
+                        <option value="technology">🔧 Công Nghệ</option>
+                    </select>
+                    <!-- Nút cài đặt API -->
+                    <button class="btn-icon" id="settingsBtn">⚙️</button>
+                </div>
+            </div>
+        </header>
 
-        <div class="modal" id="apiModal">
-            <div class="modal-content">
-                <h3>Cài đặt API Key</h3>
-                <p>Nhập Gemini API Key của bạn (lưu an toàn trong trình duyệt):</p>
-                <input type="text" id="apiKeyInput" placeholder="AIzaSy..." value="">
-                <div class="modal-actions">
-                    <button class="btn-primary" id="saveApiBtn">Lưu</button>
-                    <button class="btn-secondary" id="closeModalBtn">Đóng</button>
-                </div>
-            </div>
-        </div>
+        <!-- MODAL CÀI ĐẶT API (ẩn) -->
+        <div class="modal" id="apiModal">
+            <div class="modal-content">
+                <h3>Cài đặt API Key</h3>
+                <p>Nhập Gemini API Key của bạn (sẽ được lưu trong trình duyệt):</p>
+                <input type="text" id="apiKeyInput" placeholder="AIzaSy..." value="">
+                <div class="modal-actions">
+                    <button class="btn-primary" id="saveApiBtn">Lưu</button>
+                    <button class="btn-secondary" id="closeModalBtn">Đóng</button>
+                </div>
+            </div>
+        </div>
 
-        <div class="modal" id="roadmapPopup">
-            <div class="modal-content">
-                <h3>🚀 Lộ trình khắc phục: <span id="weaknessTitle" style="color: var(--blue);"></span></h3>
-                <div class="roadmap-checklist" id="popupContent">
-                    </div>
-                <div class="modal-actions" style="margin-top: 20px;">
-                    <button class="btn-primary" id="closePopupBtn">Đóng</button>
-                </div>
-            </div>
-        </div>
+        <!-- POPUP LỘ TRÌNH CẤP TỐC (ẩn) -->
+        <div class="modal" id="roadmapPopup">
+            <div class="modal-content">
+                <h3>🚀 Lộ trình cấp tốc</h3>
+                <div id="popupContent">Đang tải...</div>
+                <div class="modal-actions">
+                    <button class="btn-primary" id="closePopupBtn">Đóng</button>
+                </div>
+            </div>
+        </div>
 
-        <div class="dashboard-grid">
-            <div class="glass-card schedule-panel">
-                <h3 class="card-title">🤖 AI Schedule</h3>
-                <div class="schedule-list" id="scheduleList" ondragover="event.preventDefault()" ondrop="App.handleDrop(event)">
-                </div>
-                <div class="schedule-input-group">
-                    <input type="text" id="subjectInput" placeholder="Môn học..." value="Hóa Học">
-                    <select id="timeSelect">
-                        <option value="07:30 - 09:00">07:30 - 09:00</option>
-                        <option value="09:15 - 10:45">09:15 - 10:45</option>
-                        <option value="13:30 - 15:00">13:30 - 15:00</option>
-                        <option value="15:15 - 16:45">15:15 - 16:45</option>
-                        <option value="19:00 - 20:30">19:00 - 20:30</option>
-                    </select>
-                </div>
-                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                    <button class="btn-secondary" id="addScheduleBtn">➕ Thêm</button>
-                    <button class="btn-ai" id="generateScheduleBtn">⚡ AI Tạo lịch</button>
-                </div>
-            </div>
+        <!-- DASHBOARD GRID -->
+        <div class="dashboard-grid">
+            <!-- AI Schedule Panel -->
+            <div class="glass-card schedule-panel">
+                <h3 class="card-title">🤖 AI Schedule</h3>
+                <div class="schedule-list" id="scheduleList" ondragover="event.preventDefault()" ondrop="App.handleDrop(event)">
+                    <!-- Các môn học sẽ được render bằng JS -->
+                </div>
+                <div class="schedule-input-group">
+                    <input type="text" id="subjectInput" placeholder="Môn học..." value="Hóa Học">
+                    <select id="timeSelect">
+                        <option value="07:30 - 09:00">07:30 - 09:00</option>
+                        <option value="09:15 - 10:45">09:15 - 10:45</option>
+                        <option value="13:30 - 15:00">13:30 - 15:00</option>
+                        <option value="15:15 - 16:45">15:15 - 16:45</option>
+                        <option value="19:00 - 20:30">19:00 - 20:30</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <button class="btn-secondary" id="addScheduleBtn">➕ Thêm</button>
+                    <button class="btn-ai" id="generateScheduleBtn">⚡ AI Tạo lịch</button>
+                </div>
+            </div>
 
-            <div class="glass-card">
-                <h3 class="card-title">🧠 Daily Insight</h3>
-                <div class="insight-box" id="dailyTip">Đang tải insight...</div>
-                <div class="bio-metrics">
-                    <div class="metric-item">
-                        <span class="metric-label">❤️ Nhịp tim</span>
-                        <span class="metric-value" id="heartRate">72 bpm</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">⚡ Tập trung</span>
-                        <span class="metric-value" id="focusLevel">85%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">📊 Điểm TB hiện tại</span>
-                        <span class="metric-value" id="currentGPA">8.1</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-label">⚠️ Burnout risk</span>
-                        <span class="metric-value" id="burnoutRisk">12%</span>
-                    </div>
-                </div>
-            </div>
+            <!-- Daily Insight Panel -->
+            <div class="glass-card">
+                <h3 class="card-title">🧠 Daily Insight</h3>
+                <div class="insight-box" id="dailyTip">
+                    Chọn môn học để xem insight
+                </div>
+                <div class="bio-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">❤️ Nhịp tim</span>
+                        <span class="metric-value" id="heartRate">72 bpm</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">⚡ Tập trung</span>
+                        <span class="metric-value" id="focusLevel">85%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">📊 Điểm TB</span>
+                        <span class="metric-value" id="currentGPA">8.1</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">⚠️ Burnout risk</span>
+                        <span class="metric-value" id="burnoutRisk">12%</span>
+                    </div>
+                </div>
+            </div>
 
-            <div class="glass-card">
-                <h3 class="card-title">🤖 Digital Twin</h3>
-                <div class="twin-container">
-                    <div class="twin-avatar idle" id="twinAvatar">🤖</div>
-                    <div class="twin-status" id="twinStatus">Hệ thống đồng bộ ổn định</div>
-                    <div class="avatar-stats">
-                        <div class="stat-badge">
-                            <div class="stat-value" id="twinLevel">Lv.1</div>
-                            <div class="stat-label">Level</div>
-                        </div>
-                        <div class="stat-badge">
-                            <div class="stat-value" id="twinXP">0/100</div>
-                            <div class="stat-label">XP</div>
-                        </div>
-                        <div class="stat-badge">
-                            <div class="stat-value" id="twinEnergy">100%</div>
-                            <div class="stat-label">Năng lượng</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Digital Twin Panel -->
+            <div class="glass-card">
+                <h3 class="card-title">🤖 Digital Twin</h3>
+                <div class="twin-container">
+                    <div class="twin-avatar idle" id="twinAvatar">🤖</div>
+                    <div class="twin-status" id="twinStatus">Hệ thống đồng bộ ổn định</div>
+                    <div class="avatar-stats">
+                        <div class="stat-badge">
+                            <div class="stat-value" id="twinLevel">Lv.1</div>
+                            <div class="stat-label">Level</div>
+                        </div>
+                        <div class="stat-badge">
+                            <div class="stat-value" id="twinXP">0/100</div>
+                            <div class="stat-label">XP</div>
+                        </div>
+                        <div class="stat-badge">
+                            <div class="stat-value" id="twinEnergy">100%</div>
+                            <div class="stat-label">Năng lượng</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="glass-card">
-                <h3 class="card-title">💬 AI Tutor Lab</h3>
-                <div class="tutor-context">
-                    <span class="context-badge" id="currentSubjectContext">Tiếng Anh</span>
-                </div>
-                <div class="tutor-chat" id="chatBox">
-                    <div class="chat-message ai-message">
-                        <b>🤖 AI:</b> Mình đã sẵn sàng! Bạn muốn hỏi bài hay cần mình kiểm tra kiến thức môn này?
-                    </div>
-                </div>
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Hỏi AI (VD: Dạy lại mình phần này...)">
-                    <button class="btn-primary" id="searchBtn">Gửi</button>
-                </div>
-            </div>
-        </div>
+            <!-- AI Tutor Panel -->
+            <div class="glass-card">
+                <h3 class="card-title">💬 AI Tutor Lab</h3>
+                <div class="tutor-context">
+                    <span class="context-badge" id="currentSubjectContext">Tiếng Anh</span>
+                    <span class="context-badge" id="weakSkillContext">Từ vựng</span>
+                </div>
+                <div class="tutor-chat" id="chatBox">
+                    <div class="chat-message ai-message">
+                        <b>AI:</b> Chào bạn! Mình có thể giúp gì cho việc học hôm nay?
+                    </div>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Nhập câu hỏi...">
+                    <button class="btn-primary" id="searchBtn">Gửi</button>
+                </div>
+            </div>
+        </div>
 
-        <div class="knowledge-graph glass-card">
-            <h3 class="card-title">📊 Knowledge Graph (Bấm vào điểm yếu để lấy lộ trình)</h3>
-            <div class="graph-container" id="graphContainer"></div>
-        </div>
+        <!-- KNOWLEDGE GRAPH -->
+        <div class="knowledge-graph glass-card">
+            <h3 class="card-title">📊 Knowledge Graph</h3>
+            <div class="graph-container" id="graphContainer"></div>
+        </div>
 
-        <div class="roadmap-section glass-card">
-            <div class="roadmap-header">
-                <h3 class="card-title">📈 Predictive Roadmap</h3>
-                <div class="prediction-confidence">
-                    Độ tin cậy: <span id="confidenceValue">78%</span>
-                </div>
-            </div>
-            
-            <div class="score-input-group">
-                <input type="number" id="newScoreInput" placeholder="Nhập điểm thi mới (0-10)" step="0.1" min="0" max="10">
-                <button class="btn-primary" id="updateScoreBtn">Cập nhật điểm</button>
-            </div>
-            
-            <div class="chart-container">
-                <canvas id="roadmapChart"></canvas>
-            </div>
-            
-            <div class="chart-stats" id="chartStats">
-                <div class="stat-item">
-                    <div class="stat-label">Thực tế gần nhất</div>
-                    <div class="stat-number positive" id="statReal">0.0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Dự báo 1</div>
-                    <div class="stat-number" id="statPred1">0.0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Dự báo 2</div>
-                    <div class="stat-number" id="statPred2">0.0</div>
-                </div>
-            </div>
-        </div>
-    </div>
+        <!-- PREDICTIVE ROADMAP -->
+        <div class="roadmap-section glass-card">
+            <div class="roadmap-header">
+                <h3 class="card-title">📈 Predictive Roadmap</h3>
+                <div class="prediction-confidence">
+                    Độ tin cậy: <span id="confidenceValue">78%</span>
+                </div>
+            </div>
+            
+            <!-- Nhập điểm mới -->
+            <div class="score-input-group">
+                <input type="number" id="newScoreInput" placeholder="Nhập điểm mới (0-10)" step="0.1" min="0" max="10">
+                <button class="btn-primary" id="updateScoreBtn">Cập nhật điểm</button>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="roadmapChart"></canvas>
+            </div>
+            
+            <div class="chart-stats" id="chartStats">
+                <div class="stat-item">
+                    <div class="stat-label">Thực tế</div>
+                    <div class="stat-number positive" id="statReal">8.1</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Dự báo 1</div>
+                    <div class="stat-number" id="statPred1">8.5</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Dự báo 2</div>
+                    <div class="stat-number" id="statPred2">8.9</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <audio id="notificationSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" preload="auto"></audio>
-    <script src="script.js"></script>
+    <!-- Âm thanh thông báo (ẩn) -->
+    <audio id="notificationSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" preload="auto"></audio>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
+đoạn 2
