@@ -655,3 +655,67 @@ h1 {
 #notificationSound {
     display: none;
 }
+/* =========================================
+   BỔ SUNG CSS CHO TÍNH NĂNG MỚI
+========================================= */
+
+/* Hiệu ứng gõ phím của AI */
+.typing-indicator {
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    animation: blink 1.5s infinite;
+}
+@keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+/* Giao diện Checklist Lộ trình học */
+.roadmap-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+.roadmap-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 3px solid var(--purple);
+    transition: all 0.2s;
+}
+.roadmap-step:hover {
+    background: rgba(42, 157, 255, 0.1);
+}
+.roadmap-step input[type="checkbox"] {
+    margin-top: 4px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--green);
+    cursor: pointer;
+}
+.roadmap-step-content {
+    flex: 1;
+}
+.roadmap-step-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+.roadmap-step-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Hiệu ứng khi hoàn thành bước */
+.roadmap-step.completed {
+    border-left-color: var(--green);
+    opacity: 0.6;
+}
+.roadmap-step.completed .roadmap-step-title {
+    text-decoration: line-through;
+}
+
