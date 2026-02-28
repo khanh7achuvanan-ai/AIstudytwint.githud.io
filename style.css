@@ -136,3 +136,4 @@ select.sub-pick option{background:#111520}
 .toast.ok{border-color:rgba(34,211,165,.3);color:var(--green)}
 .toast.err{border-color:rgba(244,63,94,.3);color:var(--red)}
 @keyframes toast-in{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+
