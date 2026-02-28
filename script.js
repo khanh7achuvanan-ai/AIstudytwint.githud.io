@@ -690,4 +690,5 @@ const App = (function() {
 
 // Khởi động
 window.addEventListener('load', () => App.init());
-đoạn 3
+
+
